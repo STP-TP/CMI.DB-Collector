@@ -2,7 +2,7 @@ import pickle
 import os
 
 
-class Positions:
+class GamePositions:
     position_list = []
     __position = {
         "attributeId": "",
@@ -12,7 +12,7 @@ class Positions:
 
     def checkAddOrUpdate(self, position):
         # DB와 id 존재 유무 체크
-        row = next((index for (index, item) in enumerate(Positions.position_list)
+        row = next((index for (index, item) in enumerate(GamePositions.position_list)
                     if item["attributeId"] == position["attributeId"]), None)
         if row is None:
             self.addPositionDB(position)
@@ -21,20 +21,19 @@ class Positions:
             self.updatePositionDB(row, position)
             return "Update"
 
-    def addPositionDB(self, position):
-        Positions.position_list.append(position)
+    def addDB(self, position):
+        GamePositions.position_list.append(position)
 
-    def updatePositionDB(self, row, position):
-        Positions.position_list[row]["attributeName"] = position["attributeName"]
-        Positions.position_list[row]["explain"] = position["explain"]
+    def updateDB(self, row, position):
+        GamePositions.position_list[row] = position
 
     def saveDB(self):
         path = os.path.dirname(os.path.abspath(__file__)) + '\DB\position.pkl'
         with open(path, 'wb') as fout:
-            pickle.dump(Positions.position_list, fout)
+            pickle.dump(GamePositions.position_list, fout)
 
     def loadDB(self):
         path = os.path.dirname(os.path.abspath(__file__)) + '\DB\position.pkl'
         with open(path, 'rb') as fin:
-            Positions.position_list = pickle.load(fin)
+            GamePositions.position_list = pickle.load(fin)
 
