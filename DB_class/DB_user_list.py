@@ -17,6 +17,17 @@ class UserList:
     __record_rating = None
     __record_normal = None
 
+    __user_list = {
+        "playerId": "",
+        "nickname": "",
+        "grade": 0,
+        "clanName": "",
+        "ratingPoint": 0,
+        "maxRatingPoint": 0,
+        "tierName": "",
+        "records": []
+    }
+
     def __init__(self, player_id):
         self.__player_id = player_id
         UserList.__num_user += 1

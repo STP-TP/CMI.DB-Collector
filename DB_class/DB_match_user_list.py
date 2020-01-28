@@ -1,12 +1,8 @@
 class GamePosition:
-    __name = None
-    __explain = None
-    __attribute = []
-
-    def setGamePosition(self, name, explain, attribute):
+    def __init__(self, name, explain, attribute_id):
         self.__name = name
         self.__explain = explain
-        self.__attribute = attribute
+        self.__attribute = attribute_id
 
 
 class MatchUserList:
@@ -22,9 +18,8 @@ class MatchUserList:
     __battle_point = None
     __sight_point = None
     __play_time = None
-    __position_name = None
-    __position_attribute = []
-    __item = None
+    __position = None
+    __items = None
 
     def __init__(self, match_id, player_id):
         self.__match_id = match_id
@@ -56,11 +51,8 @@ class MatchUserList:
     def setPlayTime(self, time):
         self.__play_time = time
 
-    def setPosition(self, position_name):
-        self.__position_name = position_name
+    def setPosition(self, name, explain, attribute_id):
+        self.__position = GamePosition(name, explain, attribute_id)
 
-    def setPositionAttribute(self, att1, att2, att3):
-        self.__position_attribute = [att1, att2, att3]
-
-    def setItem(self, item):
-        self.__item = item
+    def setItem(self, item_id_list):
+        self.__items = item_id_list
