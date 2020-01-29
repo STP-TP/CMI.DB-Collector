@@ -1,27 +1,62 @@
+import pickle
+import DB_class.user_param.param_path as path_define
+import datetime
+import json
+
+
+def convertStr2Datetime(date: str):
+    return datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
+
+
 class MatchList:
-    __game_date = None
-    __game_type_id = None
-    __map_id = None
-    # player id 0-4 are win players, 5-9 are lose players
-    __players_list = []
+    match_list = []
+    __match = {
+        "date": type(datetime),
+        "gameTypeId": "",
+        "matchId": "",
+        "players": [],  # player id 0-4 are win players, 5-9 are lose players
+    }
+    __result = {
+        "win": [],
+        "lose": []
+    }
+    __game_type = {
+        "rating": path_define.match_rating_path,
+        "normal": path_define.match_normal_path
+    }
 
-    def __init__(self, match_id):
-        self.__match_id = match_id
+    def __init__(self, game_type):
+        self.__path = MatchList.__game_type.get(game_type)
 
-    def setMatchInformLookupResult(self, date, type_id, map_id, player_list):
-        self.setGameDate(date)
-        self.setGameTypeId(type_id)
-        self.setMapId(map_id)
-        self.setPlayers(player_list)
+    def parsingCode(self, body):
+        json_code = json.loads(body)
+        self.__match["date"] = convertStr2Datetime(str(json_code.get("date")))
+        # self.__match["matchId"] = json_code["matchId"]
+        for team in json_code["teams"]:
+            self.__result[(team.get("result"))] = team["players"]
+        self.__match["players"] = self.__result.get("win") + self.__result.get("lose")
+        pass
 
-    def setGameDate(self, game_date):
-        self.__game_date = game_date
+    def checkAddOrUpdate(self, match):
+        # DB와 id 존재 유무 체크
+        row = next((index for (index, match) in enumerate(MatchList.match_list)
+                    if match["matchId"] == match["matchId"]), None)
+        if row is None:
+            self.addDB(match)
+            return "Add"
+        else:
+            return "None"
 
-    def setGameTypeId(self, type_id):
-        self.__game_type_id = type_id
+    def addDB(self, match):
+        MatchList.match_list.append(match)
 
-    def setMapId(self, map_id):
-        self.__map_id = map_id
+    def updateDB(self, row, match):
+        MatchList.match_list[row] = match
 
-    def setPlayers(self, player_list):
-        self.__players_list = player_list
+    def saveDB(self):
+        with open(self.__path, 'wb') as file_out:
+            pickle.dump(MatchList.match_list, file_out)
+
+    def loadDB(self):
+        with open(self.__path, 'rb') as file_in:
+            MatchList.map_list = pickle.load(file_in)

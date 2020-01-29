@@ -1,5 +1,6 @@
 import pickle
-import os
+import DB_class.user_param.param_path as path_define
+
 
 class GameItems:
     item_list = []
@@ -13,6 +14,7 @@ class GameItems:
         "equipSlotCode": "",
         "equipSlotName": ""
     }
+    path = path_define.item_path
 
     def checkAddOrUpdate(self, item):
         # DB와 id 존재 유무 체크
@@ -32,12 +34,10 @@ class GameItems:
         GameItems.item_list[row] = item
 
     def saveDB(self):
-        path = os.path.dirname(os.path.abspath(__file__)) + '\DB\item.pkl'
-        with open(path, 'wb') as fout:
-            pickle.dump(GameItems.item_list, fout)
+        with open(self.path, 'wb') as file_out:
+            pickle.dump(GameItems.item_list, file_out)
 
     def loadDB(self):
-        path = os.path.dirname(os.path.abspath(__file__)) + '\DB\item.pkl'
-        with open(path, 'rb') as fin:
-            GameItems.item_list = pickle.load(fin)
+        with open(self.path, 'rb') as file_in:
+            GameItems.item_list = pickle.load(file_in)
 
