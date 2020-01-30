@@ -28,14 +28,13 @@ class MatchList:
     def __init__(self, game_type):
         self.__path = MatchList.__game_type.get(game_type)
 
-    def parsingCode(self, body):
+    def parsingCode(self, body: dict, match_id: str):
         json_code = json.loads(body)
         self.__match["date"] = convertStr2Datetime(str(json_code.get("date")))
-        # self.__match["matchId"] = json_code["matchId"]
+        self.__match["matchId"] = match_id
         for team in json_code["teams"]:
             self.__result[(team.get("result"))] = team["players"]
         self.__match["players"] = self.__result.get("win") + self.__result.get("lose")
-        pass
 
     def checkAddOrUpdate(self, match):
         # DB와 id 존재 유무 체크
