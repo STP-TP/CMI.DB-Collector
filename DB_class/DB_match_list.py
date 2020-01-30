@@ -9,7 +9,9 @@ def convertStr2Datetime(date: str):
 
 
 class MatchList:
-    match_list = []
+    __match_list = []
+    __db_init = False
+    __path: str
     __match = {
         "date": type(datetime),
         "gameTypeId": "",
@@ -26,7 +28,10 @@ class MatchList:
     }
 
     def __init__(self, game_type):
-        self.__path = MatchList.__game_type.get(game_type)
+        if MatchList.__db_init is False:
+            MatchList.loadDB()
+            MatchList.__db_init = True
+            MatchList.__path = MatchList.__game_type.get(game_type)
 
     def parsingCode(self, body: dict, match_id: str):
         json_code = json.loads(body)
@@ -36,26 +41,37 @@ class MatchList:
             self.__result[(team.get("result"))] = team["players"]
         self.__match["players"] = self.__result.get("win") + self.__result.get("lose")
 
-    def checkAddOrUpdate(self, match):
+    def checkAddOrUpdate(self, db_input):
         # DB와 id 존재 유무 체크
-        row = next((index for (index, match) in enumerate(MatchList.match_list)
-                    if match["matchId"] == match["matchId"]), None)
+        row = next((index for (index, match) in enumerate(MatchList.__match_list)
+                    if match["matchId"] == db_input["matchId"]), None)
         if row is None:
-            self.addDB(match)
+            self.addDB(db_input)
             return "Add"
         else:
             return "None"
 
-    def addDB(self, match):
-        MatchList.match_list.append(match)
+    @staticmethod
+    def addDB(db_input):
+        MatchList.__match_list.append(db_input)
 
-    def updateDB(self, row, match):
-        MatchList.match_list[row] = match
+    @staticmethod
+    def updateDB(row, db_input):
+        MatchList.__match_list[row] = db_input
 
-    def saveDB(self):
-        with open(self.__path, 'wb') as file_out:
-            pickle.dump(MatchList.match_list, file_out)
+    @classmethod
+    def saveDB(cls):
+        with open(cls.__path, 'wb') as file_out:
+            pickle.dump(MatchList.__match_list, file_out)
 
-    def loadDB(self):
-        with open(self.__path, 'rb') as file_in:
-            MatchList.map_list = pickle.load(file_in)
+    @classmethod
+    def loadDB(cls):
+        try:
+            with open(cls.__path, 'rb') as file_in:
+                MatchList.__match_list = pickle.load(file_in)
+        except FileNotFoundError:
+            pass
+
+    @classmethod
+    def getDB(cls):
+        return cls.__match_list

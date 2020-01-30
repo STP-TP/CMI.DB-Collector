@@ -174,6 +174,7 @@ class CommToApiServer:
         if ret is not True:
             return self._get_response_code(self._innerErrCode)
 
+        item_name = quote(item_name)
         requestUrl = self._apiURL + "battleitems?itemName=" + item_name + "&wordType=" + word_type \
                      + "&limit=" + str(limit) + "&" + self._apiKey
         return self._get_apiBody(requestUrl)
@@ -184,13 +185,19 @@ class CommToApiServer:
             return self._get_response_code(self._innerErrCode)
 
         opt_url = ""
+        div_value = {
+            1: ";",
+            2: ",",
+            3: ","
+        }
         if q_lst is not None:
             number = 0
             opt_url = "&q="
             for opt_value in q_lst:
-                opt_url = opt_url + self._itemList[number] + ":" + opt_value + ";"
+                opt_url = opt_url + div_value.get(number, "") + self._itemList[number] + ":" + opt_value
                 number = number + 1
 
+        item_name = quote(item_name)
         requestUrl = self._apiURL + "battleitems?itemName=" + item_name + "&wordType=" + word_type + "&limit=" \
                      + str(limit) + opt_url + "&" + self._apiKey
         return self._get_apiBody(requestUrl)
