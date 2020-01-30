@@ -1,7 +1,7 @@
 import json
 import api_comm as comm
-import DB_class.DB_characters as character_db
-import DB_class.DB_items as item_db
+import DB_class.DB_character as character_db
+import DB_class.DB_item as item_db
 
 
 class CollectDbFlow:
