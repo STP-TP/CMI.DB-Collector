@@ -30,10 +30,12 @@ class CollectDbFlow:
         self.db_item.saveDB()
 
     def collectRankerId_tierScore(self, rank_min, rank_max):
-        self.__com.lookup_totalRatingRanking(0, 100)
+        print(self.__com.lookup_totalRatingRanking(0, 100))
 
 
 a = CollectDbFlow()
-a.collectItems()
+# a.collectItems()
 # print(a.db_item.getDB())
 # a.collectCharacterDB()
+
+a.collectRankerId_tierScore(0, 100)

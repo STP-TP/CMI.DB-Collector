@@ -1,4 +1,5 @@
 import datetime
+import time
 import urllib.request as socket
 import urllib.error as urlerr
 from urllib.parse import quote
@@ -10,7 +11,7 @@ class CommToApiServer:
     _apiWordType = "wordType=full"
     _matchNextEnable = False
     _innerErrCode = 0
-    __api_start_time = None
+    __api_start_time = [];
 
     _itemList = {
         0: "characterId",
@@ -35,18 +36,17 @@ class CommToApiServer:
 
     def _get_apiBody(self, request_url):
         # 횟수 제한 확인
-        CommToApiServer.__api_start_time.append(datetime.datetime.now())
-        if len(CommToApiServer.__api_start_time) >= 100:
-
-        if CommToApiServer.__api_start_time is None:
-            CommToApiServer.__api_start_time = datetime.datetime.now()
-            CommToApiServer.__api_use_count = 0
+        if len(CommToApiServer.__api_start_time) is 0:
+            CommToApiServer.__api_start_time.append(datetime.datetime.now())
         else:
-            CommToApiServer.__api_use_count += 1
-            span_time = datetime.datetime.now() - CommToApiServer.__api_start_time
-            if (span_time.total_seconds() >= 1) | (CommToApiServer.__api_use_count >= 100):
-
-
+            CommToApiServer.__api_start_time.append(datetime.datetime.now())
+            api_cnt = len(CommToApiServer.__api_start_time)
+            span_time = (CommToApiServer.__api_start_time[api_cnt]
+                         - CommToApiServer.__api_start_time[api_cnt - 1])
+            if span_time.total_seconds() < 1:
+                time.sleep(1-span_time)
+            if api_cnt >= 100:
+                del CommToApiServer.__api_start_time[0]
 
         try:
             response = socket.urlopen(request_url)
@@ -164,7 +164,8 @@ class CommToApiServer:
         if ret is not True:
             return self._get_response_code(self._innerErrCode)
 
-        requestUrl = self._apiURL + "ranking/ratingpoint?offset=" + str(offset) + "&limit=" + str(limit) + "&" + self._apiKey
+        requestUrl = self._apiURL + "ranking/ratingpoint?offset=" + str(offset) + "&limit=" + str(
+            limit) + "&" + self._apiKey
         return self._get_apiBody(requestUrl)
 
     def lookup_playerCharacterRanking(self, player_id, character_id, ranking_type="exp"):
@@ -172,7 +173,7 @@ class CommToApiServer:
         if ret is not True:
             return self._get_response_code(self._innerErrCode)
 
-        requestUrl = self._apiURL + "ranking/characters/" + character_id + "/" + ranking_type + "?playerId="\
+        requestUrl = self._apiURL + "ranking/characters/" + character_id + "/" + ranking_type + "?playerId=" \
                      + player_id + "&" + self._apiKey
         return self._get_apiBody(requestUrl)
 
@@ -182,7 +183,7 @@ class CommToApiServer:
         if ret is not True:
             return self._get_response_code(self._innerErrCode)
 
-        requestUrl = self._apiURL + "ranking/characters/" + character_id + "/" + ranking_type + "?offset="\
+        requestUrl = self._apiURL + "ranking/characters/" + character_id + "/" + ranking_type + "?offset=" \
                      + str(offset) + "&limit=" + str(limit) + "&" + self._apiKey
         return self._get_apiBody(requestUrl)
 
@@ -234,7 +235,7 @@ class CommToApiServer:
         item_url = ""
         for item_id in item_id_lst:
             item_url = item_url + item_id
-            if item_id is not item_id_lst(len(item_id_lst)-1):
+            if item_id is not item_id_lst(len(item_id_lst) - 1):
                 item_url = item_url + ","
         requestUrl = self._apiURL + "multi/battleitems/?itemIds=" + item_url + "&" + self._apiKey
         return self._get_apiBody(requestUrl)
