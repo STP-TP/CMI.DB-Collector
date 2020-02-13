@@ -10,6 +10,7 @@ class CommToApiServer:
     _apiWordType = "wordType=full"
     _matchNextEnable = False
     _innerErrCode = 0
+    __api_start_time = None
 
     _itemList = {
         0: "characterId",
@@ -33,6 +34,20 @@ class CommToApiServer:
         self.apiKey = "apikey=" + api_key
 
     def _get_apiBody(self, request_url):
+        # 횟수 제한 확인
+        CommToApiServer.__api_start_time.append(datetime.datetime.now())
+        if len(CommToApiServer.__api_start_time) >= 100:
+
+        if CommToApiServer.__api_start_time is None:
+            CommToApiServer.__api_start_time = datetime.datetime.now()
+            CommToApiServer.__api_use_count = 0
+        else:
+            CommToApiServer.__api_use_count += 1
+            span_time = datetime.datetime.now() - CommToApiServer.__api_start_time
+            if (span_time.total_seconds() >= 1) | (CommToApiServer.__api_use_count >= 100):
+
+
+
         try:
             response = socket.urlopen(request_url)
             res_code = response.getcode()
@@ -97,7 +112,7 @@ class CommToApiServer:
                      + str(limit) + "&" + self.apiKey
         return self._get_apiBody(requestUrl)
 
-    def lookup_playerInform(self, player_id):
+    def lookup_playerInfo(self, player_id):
         ret = self._check_id(player_id)
         if ret is not True:
             return self._get_response_code(self._innerErrCode)
@@ -113,7 +128,7 @@ class CommToApiServer:
         requestUrl = self._apiURL + "players/" + player_id + "/matches?gameTypeId=" + game_type
         if isinstance(start_date, datetime.date) and isinstance(end_date, datetime.date):
             startDate = start_date.strftime("%Y%m%dT%M%S")
-            endDate = end_date.strftime("%Y%m%dT%M%s")
+            endDate = end_date.strftime("%Y%m%dT%M%S")
             requestUrl = requestUrl + "&startDate=" + startDate + "&endDate=" + endDate
         requestUrl = requestUrl + "&limit=" + str(limit) + "&" + self.apiKey
         return self._get_apiBody(requestUrl)
@@ -126,7 +141,7 @@ class CommToApiServer:
         requestUrl = self._apiURL + "players/" + player_id + "/matches?next=<next>&" + self._apiKey
         return self._get_apiBody(requestUrl)
 
-    def lookup_matchInform(self, match_id):
+    def lookup_matchInfo(self, match_id):
         ret = self._check_id(match_id)
         if ret is not True:
             return self._get_response_code(self._innerErrCode)
@@ -142,6 +157,8 @@ class CommToApiServer:
         requestUrl = self._apiURL + "ranking/ratingpoint?playerId=" + player_id + "&" + self._apiKey
         return self._get_apiBody(requestUrl)
 
+    # offset: start ranking number
+    # limit: output number (max : 1000)
     def lookup_totalRatingRanking(self, offset=0, limit=10):
         ret = self._check_int_value(offset) & self._check_int_value(limit)
         if ret is not True:
@@ -202,7 +219,7 @@ class CommToApiServer:
                      + str(limit) + opt_url + "&" + self._apiKey
         return self._get_apiBody(requestUrl)
 
-    def lookup_itemInform(self, item_id):
+    def lookup_itemInfo(self, item_id):
         ret = self._check_id(item_id)
         if ret is not True:
             return self._get_response_code(self._innerErrCode)
@@ -210,7 +227,7 @@ class CommToApiServer:
         requestUrl = self._apiURL + "battleitems/" + item_id + "?" + self._apiKey
         return self._get_apiBody(requestUrl)
 
-    def lookup_itemMultiInform(self, item_id_lst=None):
+    def lookup_itemMultiInfo(self, item_id_lst=None):
         if item_id_lst is None:
             item_id_lst = []
 
@@ -222,7 +239,7 @@ class CommToApiServer:
         requestUrl = self._apiURL + "multi/battleitems/?itemIds=" + item_url + "&" + self._apiKey
         return self._get_apiBody(requestUrl)
 
-    def get_characterInform(self):
+    def get_characterInfo(self):
         requestUrl = self._apiURL + "characters?" + self._apiKey
         return self._get_apiBody(requestUrl)
 
