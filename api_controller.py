@@ -2,11 +2,13 @@ import json
 import api_comm as comm
 import DB_class.DB_character as characterDb
 import DB_class.DB_item as itemDb
+import DB_class.DB_user as userDb
 
 
 class CollectDbFlow:
     db_char = characterDb.GameCharacters()
     db_item = itemDb.GameItems()
+    db_user = userDb.User()
 
     def __init__(self):
         self.__com = comm.CommToApiServer()
@@ -30,7 +32,13 @@ class CollectDbFlow:
         self.db_item.saveDB()
 
     def collectRankerId_tierScore(self, rank_min, rank_max):
-        print(self.__com.lookup_totalRatingRanking(0, 100))
+        res = self.__com.lookup_totalRatingRanking(rank_min, rank_max)
+        body = json.loads(res["body"])
+        for ranker_id in body["rows"]:
+            res = self.__com.lookup_playerInfo(ranker_id["playerId"])
+            print(res)
+            body_id = json.loads(res["body"])
+            self.db_user.checkAddOrUpdate(body_id)
 
 
 a = CollectDbFlow()
@@ -39,3 +47,4 @@ a = CollectDbFlow()
 # a.collectCharacterDB()
 
 a.collectRankerId_tierScore(0, 100)
+print(a.db_user.getDB())
