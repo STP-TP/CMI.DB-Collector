@@ -42,10 +42,9 @@ class CommToApiServer:
             CommToApiServer.__api_start_time.append(datetime.datetime.now())
             api_cnt = len(CommToApiServer.__api_start_time)
             span_time = (CommToApiServer.__api_start_time[api_cnt - 1]
-                         - CommToApiServer.__api_start_time[api_cnt - 2])
-            print(api_cnt)
-            print(span_time.total_seconds())
-            if (span_time.total_seconds() > 1) & (api_cnt >= 100):
+                         - CommToApiServer.__api_start_time[0])
+
+            if (span_time.total_seconds() < 1) & (api_cnt >= 100):
                 time.sleep(1 - span_time.total_seconds() + 0.3)
             if api_cnt >= 100:
                 del CommToApiServer.__api_start_time[0]

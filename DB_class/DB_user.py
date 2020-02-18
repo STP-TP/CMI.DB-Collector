@@ -58,10 +58,10 @@ class User:
                     if item["playerId"] == dict_input["playerId"]), None)
         if not row:
             User.countNumUser()
-            self.addDB(self.__user_info)
+            self.addDB(dict_input)
             return "Add"
         else:
-            self.updateDB(row, self.__user_info)
+            self.updateDB(row, dict_input)
             return "Update"
 
     @classmethod

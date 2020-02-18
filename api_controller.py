@@ -36,9 +36,9 @@ class CollectDbFlow:
         body = json.loads(res["body"])
         for ranker_id in body["rows"]:
             res = self.__com.lookup_playerInfo(ranker_id["playerId"])
-            print(res)
             body_id = json.loads(res["body"])
             self.db_user.checkAddOrUpdate(body_id)
+        self.db_user.saveDB()
 
 
 a = CollectDbFlow()
@@ -46,5 +46,4 @@ a = CollectDbFlow()
 # print(a.db_item.getDB())
 # a.collectCharacterDB()
 
-a.collectRankerId_tierScore(0, 100)
-print(a.db_user.getDB())
+a.collectRankerId_tierScore(0, 10)
