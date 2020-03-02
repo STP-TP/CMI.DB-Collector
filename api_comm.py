@@ -132,6 +132,7 @@ class CommToApiServer:
             endDate = end_date.strftime("%Y%m%dT%M%S")
             requestUrl = requestUrl + "&startDate=" + startDate + "&endDate=" + endDate
         requestUrl = requestUrl + "&limit=" + str(limit) + "&" + self.apiKey
+        print(requestUrl)
         return self._get_apiBody(requestUrl)
 
     def lookup_playerMatch_next(self, player_id):
