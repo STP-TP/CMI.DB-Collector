@@ -4,10 +4,11 @@ basic_path = os.getcwd() + '\\DB'
 user_path = basic_path + '\\user.pkl'
 match_rating_path = basic_path + '\\match_rating.pkl'
 match_normal_path = basic_path + '\\match_normal.pkl'
-match_player_path = basic_path + '\\match_player.pkl'
+match_detail_path = basic_path + '\\match_detail.pkl'
 item_path = basic_path + '\\item.pkl'
 map_path = basic_path + '\\map.pkl'
 position_path = basic_path + '\\position.pkl'
+attribute_path = basic_path + '\\attribute.pkl'
 character_path = basic_path + '\\character.pkl'
 
 
