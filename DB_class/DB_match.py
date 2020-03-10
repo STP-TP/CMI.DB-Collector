@@ -1,12 +1,5 @@
-import pickle
-import DB_class.user_param.param_path as path_define
-import datetime
-import json
 from DB_class.DB_manager import *
-
-
-def convert_str_to_datetime(date: str):
-    return datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
+import datetime
 
 
 class MatchList(DbManager):
@@ -34,4 +27,3 @@ class MatchList(DbManager):
     def init_path(self, option):
         self._path = self.__game_type.get(option)
         self.__option = option
-

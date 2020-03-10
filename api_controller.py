@@ -83,43 +83,26 @@ class CollectDbFlow:
         self.parser.match_detail_info(match_id, body)
         # for match_id in match_id_list:
 
-
-
-        """for user in user_list:
-            
-            user["playerId"]"""
-                self.db_user.checkAddOrUpdate(body_id)
-
-                # user match info
-                day_end = datetime.datetime.now()
-                day_start = datetime.datetime.now() - datetime.timedelta(days)
-                player_id = ranker_id["playerId"]
-                res = self.__com.lookup_playerMatch(player_id, "rating", 100, day_start, day_end)
-                body = json.loads(res["body"])
-                rows = body["matches"]["rows"]
-                print(rows)
-            self.db_user.saveDB()
-
     def trigger_normal_based(self, rank_min, rank_max, days):
-        for char in CollectDbFlow.db_char.getDB():
-            res = self.__com.lookup_totalCharacterRanking(char["characterId"], "exp", rank_min, rank_max)
+        for char in CollectDbFlow.db_char.get_db():
+            res = self.__com.lookup_total_character_ranking(char["characterId"], "exp", rank_min, rank_max)
             body = json.loads(res["body"])
             rows = body["rows"]
             for ranker_id in rows:
                 # user list
-                res = self.__com.lookup_playerInfo(ranker_id["playerId"])
+                res = self.__com.lookup_player_info(ranker_id["playerId"])
                 body_id = json.loads(res["body"])
-                self.db_user.checkAddOrUpdate(body_id)
+                self.db_user.overlap_check(body_id)
 
                 # user match info
                 day_end = datetime.datetime.now()
                 day_start = datetime.datetime.now() - datetime.timedelta(days)
                 player_id = ranker_id["playerId"]
-                res = self.__com.lookup_playerMatch(player_id, "normal", 100, day_start, day_end)
+                res = self.__com.lookup_player_match(player_id, "normal", 100, day_start, day_end)
                 body = json.loads(res["body"])
                 rows = body["matches"]["rows"]
                 print(rows)
-            self.db_user.saveDB()
+            self.db_user.save_db()
 
     def trigger_nickname(self, nickname, game_type="rating", days=7):
         res = self.__com.lookup_nickname(nickname)
@@ -130,17 +113,17 @@ class CollectDbFlow:
 
         day_end = datetime.datetime.now()
         day_start = datetime.datetime.now() - datetime.timedelta(days)
-        res = self.__com.lookup_playerMatch(rows[0]["playerId"], game_type, 100, day_start, day_end)
+        res = self.__com.lookup_player_match(rows[0]["playerId"], game_type, 100, day_start, day_end)
         body = json.loads(res["body"])
         rows = body["matches"]["rows"]
         print(rows)  # match info save
 
         for match in rows:
-            res = self.__com.lookup_matchInfo(match["matchId"])
+            res = self.__com.lookup_match_info(match["matchId"])
             body = json.loads(res["body"])
             print(body)
-            #rows_match = body["rows"]
-            #print(rows_match)
+            # rows_match = body["rows"]
+            # print(rows_match)
 
 
 a = CollectDbFlow()
@@ -150,6 +133,6 @@ a.collect_character_db()"""
 
 a.set_collect_mode(False)
 
-# a. trigger_rating_based(0, 150, 1)
+a. trigger_rating_based(0, 150, 1)
 # a.trigger_normal_based(0, 5, 1)
-a.trigger_nickname("Papico", "normal")
+# a.trigger_nickname("Papico", "normal")
