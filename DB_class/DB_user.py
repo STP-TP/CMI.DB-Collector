@@ -24,9 +24,9 @@ class User:
     }
 
     def __init__(self):
-        if not User.__db_init:
-            User.loadDB()
-            User.__db_init = True
+        if not self.__db_init:
+            self.loadDB()
+            self.__db_init = True
 
     def setPlayerInfoSearchResult(self, dict_input):
         self.__user_info["playerId"] = dict_input.get("playerId")
@@ -58,10 +58,10 @@ class User:
                     if item["playerId"] == dict_input["playerId"]), None)
         if not row:
             User.countNumUser()
-            self.addDB(self.__user_info)
+            self.addDB(dict_input)
             return "Add"
         else:
-            self.updateDB(row, self.__user_info)
+            self.updateDB(row, dict_input)
             return "Update"
 
     @classmethod

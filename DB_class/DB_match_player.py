@@ -1,29 +1,65 @@
-class GamePosition:
-    def __init__(self, name, explain, attribute_id):
-        self.__name = name
-        self.__explain = explain
-        self.__attribute = attribute_id
+import pickle
+import DB_class.user_param.param_path as path_define
 
 
-class MatchUserList:
-    __random = None
-    __party_user_count = None
-    __character_id = None
-    __level = None
-    __kill_cnt = None
-    __death_cnt = None
-    __assist_cnt = None
-    __attack_point = None
-    __damage_point = None
-    __battle_point = None
-    __sight_point = None
-    __play_time = None
-    __position = None
-    __items = None
+class MatchPlayer:
+    __db_init = False
+    __match_player_list = []
+    __match_player_info = {
+        "date": "",
+        "gameTypeId": "",
+        "result": "",
+        "mapId": "",
+        "mapName": "",
+        "playerId": "",
+        "playerNickname": "",
+        "random": "",
+        "partyUserCount": "",
+        "characterId": "",
+        "characterName": "",
+        "level": "",
+        "killCount": "",
+        "deathCount": "",
+        "assistCount": "",
+        "attackPoint": "",
+        "damagePoint": "",
+        "battlePoint": "",
+        "sightPoint": "",
+        "playTime": "",
+        "position": "",
+        "items": ""
+    }
 
-    def __init__(self, match_id, player_id):
-        self.__match_id = match_id
-        self.__match_id = player_id
+    def __init__(self):
+        if not self.__db_init:
+            self.loadDB()
+            self.__db_init = True
+
+    def setMatchPlayerInfoSearchResult(self, dict_input):
+        self.__match_player_info["date"] = dict_input.get("date")
+        temp_teams = []
+        temp_teams = dict_input.get("teams")
+        self.__match_player_info["result"] = temp_teams[0].get("result")
+        self.__match_player_info["mapId"] = dict_input.get("date")
+        self.__match_player_info["mapName"] = dict_input.get("date")
+        self.__match_player_info["playerId"] = dict_input.get("date")
+        self.__match_player_info["playerNickname"] = dict_input.get("date")
+        self.__match_player_info["random"] = dict_input.get("date")
+        self.__match_player_info["partyUserCount"] = dict_input.get("date")
+        self.__match_player_info["characterId"] = dict_input.get("date")
+        self.__match_player_info["characterName"] = dict_input.get("date")
+        self.__match_player_info["level"] = dict_input.get("date")
+        self.__match_player_info["killCount"] = dict_input.get("date")
+        self.__match_player_info["deathCount"] = dict_input.get("date")
+        self.__match_player_info["assistCount"] = dict_input.get("date")
+        self.__match_player_info["attackPoint"] = dict_input.get("date")
+        self.__match_player_info["damagePoint"] = dict_input.get("date")
+        self.__match_player_info["battlePoint"] = dict_input.get("date")
+        self.__match_player_info["sightPoint"] = dict_input.get("date")
+        self.__match_player_info["playTime"] = dict_input.get("date")
+        self.__match_player_info["position"] = dict_input.get("date")
+        self.__match_player_info["items"] = dict_input.get("date")
+
 
     def setRandom(self, random):
         self.__random = random
