@@ -71,11 +71,11 @@ class ApiParser:
         match["matchId"] = match_id
         match["date"] = convert_str_to_datetime(body["date"])
         match["gameTypeId"] = body["gameTypeId"]
+        player_list = []
         for result in body["teams"]:
-            player_list = []
             for user in result["players"]:
                 player_list.append(user)
-            match["players"] = player_list
+        match["players"] = player_list
 
         match_detail_db = []
         for inx, user in enumerate(body["players"]):
@@ -103,9 +103,8 @@ class ApiParser:
             db["items"] = item_list
             match_detail_db.append(db)
 
-        print(match)
-        print(match_detail_db)
-        return [match, match_detail_db]
+        # one match, ten match_details
+        return [match, match_detail_db, player_list]
 
     def total_ranking(self, body):
         pass

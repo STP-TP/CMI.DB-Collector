@@ -1,27 +1,19 @@
 from DB_class.DB_manager import *
-import datetime
+import DB_class.user_param.param_db as db_naming
 
 
 class MatchList(DbManager):
-    db = {
-        "date": type(datetime),
-        "gameTypeId": str,
-        "matchId": str,
-        "players": list,  # player id 0-4 are win players, 5-9 are lose players
-    }
-    result = {
-        "win": list,
-        "lose": list
-    }
+    db = db_naming.match_db
     __game_type = {
         "rating": path_define.match_rating_path,
         "normal": path_define.match_normal_path
     }
     __option: str
+    primary_key = db_naming.match_id
 
     def overlap_check(self, db_input):
         row = next((index for (index, item) in enumerate(self._db_list)
-                    if item["matchId"] == db_input["matchId"]), None)
+                    if item[self.primary_key] == db_input[self.primary_key]), None)
         return row
 
     def init_path(self, option):

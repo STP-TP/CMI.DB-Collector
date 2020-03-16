@@ -2,8 +2,10 @@ import json
 import api_comm as comm
 import DB_class.DB_other as DbOther
 import DB_class.DB_user as userDb
+import DB_class.user_param.param_db as db_naming
 import datetime
 from DB_class.DB_parser import *
+
 
 
 class CollectDbFlow:
@@ -40,7 +42,7 @@ class CollectDbFlow:
     def collect_items(self):
         char = self.db_char.get_db()
         for char_id in char:
-            res = self.__com.search_item("E ", "front", 100, [char_id["characterId"]])
+            res = self.__com.search_item("E ", "front", 100, [char_id[db_naming.character_id]])
             body = json.loads(res["body"])
             print(body)
             for item in body.get("rows"):
@@ -51,37 +53,58 @@ class CollectDbFlow:
         res = self.__com.lookup_total_rating_ranking(rank_min, rank_max)
         body = json.loads(res["body"])
         for ranker_id in body["rows"]:
-            res = self.__com.lookup_player_info(ranker_id["playerId"])
+            res = self.__com.lookup_player_info(ranker_id[db_naming.player_id])
             body_id = json.loads(res["body"])
             self.db_user.overlap_check(body_id)
         self.db_user.save_db()
 
     def trigger_rating_based(self, rank_min, rank_max, days):
-        if self.__db_collect_mode:
-            res = self.__com.lookup_total_rating_ranking(rank_min, rank_max)
-            body = json.loads(res["body"])
-            for ranker_id in body["rows"]:
-                # user list
-                res = self.__com.lookup_player_info(ranker_id["playerId"])
-                body_id = json.loads(res["body"])
-                self.db_user.overlap_check(body_id)
-            self.db_user.save_db()
-        user_list = self.db_user.get_db()
+        user_list = []
+        match_list = []
+        user_db = []
+        match_db = []
+        match_detail_db = []
+        player_dict = {}
+        match_dict = {}
+
         day_end = datetime.datetime.now()
         day_start = datetime.datetime.now() - datetime.timedelta(days)
-        player_id = "b4e521441196692b1030ab83a7350ad7"
 
-        body = self.response_code(self.__com.lookup_player_match(player_id, "normal", 100, day_start, day_end))
+        # get ranking list
+        body = self.response_code(self.__com.lookup_total_rating_ranking(rank_min, rank_max))
         if body is None:
             return
-        match_id_list = self.parser.player_matching_record(body)
+        for ranker_id in body["rows"]:
+            user_list.append(ranker_id[db_naming.player_id])
 
-        match_id = match_id_list[0]
-        body = self.response_code(self.__com.lookup_match_info(match_id))
-        if body is None:
-            return
-        self.parser.match_detail_info(match_id, body)
-        # for match_id in match_id_list:
+        for player_id in user_list:
+            if player_id in player_dict:
+                continue
+            # get player info
+            body = self.response_code(self.__com.lookup_player_info(player_id))
+            if body is None:
+                return
+            user_db.append(body)
+            body = self.response_code(self.__com.lookup_player_match(player_id, "rating", 100, day_start, day_end))
+            player_dict[player_id] = True
+            if body is None:
+                return
+            match_list = match_list + self.parser.player_matching_record(body)
+            for match_id in match_list:
+                if match_id in match_dict:
+                    continue
+                body = self.response_code(self.__com.lookup_match_info(match_id))
+                match_dict[match_id] = True
+                if body is None:
+                    return
+                else:
+                    res = self.parser.match_detail_info(match_id, body)
+                    match_db.append(res[0])
+                    match_detail_db = match_detail_db + res[1]
+                    user_list = user_list + res[2]
+        print(len(user_db))
+        print(len(match_db))
+        print(len(match_detail_db))
 
     def trigger_normal_based(self, rank_min, rank_max, days):
         for char in CollectDbFlow.db_char.get_db():
@@ -131,7 +154,7 @@ a = CollectDbFlow()
 a.collect_items()
 a.collect_character_db()"""
 
-a.set_collect_mode(False)
+a.set_collect_mode(True)
 
 a. trigger_rating_based(0, 150, 1)
 # a.trigger_normal_based(0, 5, 1)

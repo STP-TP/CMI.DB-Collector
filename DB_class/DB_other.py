@@ -1,15 +1,14 @@
 from DB_class.DB_manager import *
+import DB_class.user_param.param_db as db_naming
 
 
 class GamePositions(DbManager):
-    db = {
-        "name": "",
-        "explain": ""
-    }
+    db = db_naming.position_db
+    primary_key = db_naming.name
 
     def overlap_check(self, db_input):
         row = next((index for (index, item) in enumerate(self._db_list)
-                    if item["name"] == db_input["name"]), None)
+                    if item[self.primary_key] == db_input[self.primary_key]), None)
         return row
 
     def init_path(self, option):
@@ -17,14 +16,12 @@ class GamePositions(DbManager):
 
 
 class GameMaps(DbManager):
-    db = {
-        "mapId": "",
-        "name": "",
-    }
+    db = db_naming.map_db
+    primary_key = db_naming.map_id
 
     def overlap_check(self, db_input):
         row = next((index for (index, item) in enumerate(self._db_list)
-                    if item["mapId"] == db_input["mapId"]), None)
+                    if item[self.primary_key] == db_input[self.primary_key]), None)
         return row
 
     def init_path(self, option):
@@ -32,20 +29,12 @@ class GameMaps(DbManager):
 
 
 class GameItems(DbManager):
-    db = {
-        "itemId": "",
-        "itemName": "",
-        "slotCode": "",
-        "slotName": "",
-        "rarityCode": "",
-        "rarityName": "",
-        "equipSlotCode": "",
-        "equipSlotName": ""
-    }
+    db = db_naming.item_db
+    primary_key = db_naming.item_id
 
     def overlap_check(self, db_input):
         row = next((index for (index, item) in enumerate(self._db_list)
-                    if item["itemId"] == db_input["itemId"]), None)
+                    if item[self.primary_key] == db_input[self.primary_key]), None)
         return row
 
     def init_path(self, option):
@@ -53,15 +42,12 @@ class GameItems(DbManager):
 
 
 class GameAttribute(DbManager):
-    db = {
-        "attributeId": "",
-        "attributeName": "",
-        "explain": "",
-    }
+    db = db_naming.attribute_db
+    primary_key = db_naming.attribute_id
 
     def overlap_check(self, db_input):
         row = next((index for (index, item) in enumerate(self._db_list)
-                    if item["attributeId"] == db_input["attributeId"]), None)
+                    if item[self.primary_key] == db_input[self.primary_key]), None)
         return row
 
     def init_path(self, option):
@@ -69,14 +55,12 @@ class GameAttribute(DbManager):
 
 
 class GameCharacters(DbManager):
-    db = {
-        "characterId": "",
-        "characterName": "",
-    }
+    db = db_naming.character_db
+    primary_key = db_naming.character_id
 
     def overlap_check(self, db_input):
         row = next((index for (index, char) in enumerate(self._db_list)
-                    if char["characterId"] == db_input["characterId"]), None)
+                    if char[self.primary_key] == db_input[self.primary_key]), None)
         return row
 
     def init_path(self, option):
