@@ -3,6 +3,7 @@ from DB_class.DB_user import *
 from DB_class.DB_match import *
 from DB_class.DB_match_detail import *
 from DB_class.DB_other import *
+import DB_class.user_param.param_db as db_naming
 import datetime
 import copy
 
@@ -40,17 +41,17 @@ class ApiParser:
 
     @staticmethod
     def player_search(body):
-        return body["rows"]["playerId"]
+        return body["rows"][db_naming.player_id]
 
     def player_info(self, body):
         for key, val in body.items():
             if key == "records":
-                self.__user.db["ratingWin"] = val[0]["winCount"]
-                self.__user.db["ratingLose"] = val[0]["loseCount"]
-                self.__user.db["ratingStop"] = val[0]["stopCount"]
-                self.__user.db["normalWin"] = val[1]["winCount"]
-                self.__user.db["normalLose"] = val[0]["loseCount"]
-                self.__user.db["normalStop"] = val[0]["stopCount"]
+                self.__user.db[db_naming.rating_win] = val[0][db_naming.win_count]
+                self.__user.db[db_naming.rating_lose] = val[0][db_naming.lose_count]
+                self.__user.db[db_naming.rating_stop] = val[0][db_naming.stop_count]
+                self.__user.db[db_naming.normal_win] = val[1][db_naming.win_count]
+                self.__user.db[db_naming.normal_lose] = val[0][db_naming.lose_count]
+                self.__user.db[db_naming.normal_stop] = val[0][db_naming.stop_count]
             self.__user.db[key] = val
         return self.__user.db
 
@@ -59,48 +60,48 @@ class ApiParser:
         matches = body["matches"]
         match_list = []
         for match in matches["rows"]:
-            match_list.append(match["matchId"])
+            match_list.append(match[db_naming.match_id])
         return match_list
 
     def match_detail_info(self, match_id, body):
         match = copy.deepcopy(self.__match_normal.db)
-        if body["gameTypeId"] == "normal":
-            match["gameTypeId"] = "normal"
-        elif body["gameTypeId"] == "rating":
-            match["gameTypeId"] = "rating"
-        match["matchId"] = match_id
-        match["date"] = convert_str_to_datetime(body["date"])
-        match["gameTypeId"] = body["gameTypeId"]
+        if body[db_naming.game_type_id] == db_naming.normal:
+            match[db_naming.game_type_id] = db_naming.normal
+        elif body[db_naming.game_type_id] == db_naming.rating:
+            match[db_naming.game_type_id] = db_naming.rating
+        match[db_naming.match_id] = match_id
+        match[db_naming.date] = convert_str_to_datetime(body[db_naming.date])
+        match[db_naming.game_type_id] = body[db_naming.game_type_id]
         player_list = []
         for result in body["teams"]:
-            for user in result["players"]:
+            for user in result[db_naming.players]:
                 player_list.append(user)
-        match["players"] = player_list
+        match[db_naming.players] = player_list
 
         match_detail_db = []
-        for inx, user in enumerate(body["players"]):
+        for inx, user in enumerate(body[db_naming.players]):
             db = copy.deepcopy(self.__detail.db)
-            db["matchId"] = match_id
-            db["playerId"] = user["playerId"]
+            db[db_naming.match_id] = match_id
+            db[db_naming.player_id] = user[db_naming.player_id]
             if inx < 5:
-                db["result"] = "win"
+                db[db_naming.result] = "win"
             else:
-                db["result"] = "lose"
+                db[db_naming.result] = "lose"
             play_info = user["playInfo"]
             for key, val in play_info.items():
-                if key == "characterName":
+                if key == db_naming.character_name:
                     continue
                 db[key] = val
-            pos = user["position"]
-            db["position"] = pos["name"]
+            pos = user[db_naming.position]
+            db[db_naming.position] = pos[db_naming.name]
             attribute_list = []
-            for attribute in pos["attribute"]:
+            for attribute in pos[db_naming.attribute]:
                 attribute_list.append(attribute["id"])
-            db["attribute"] = attribute_list
+            db[db_naming.attribute] = attribute_list
             item_list = []
-            for item in user["items"]:
-                item_list.append(item["itemId"])
-            db["items"] = item_list
+            for item in user[db_naming.items]:
+                item_list.append(item[db_naming.item_id])
+            db[db_naming.items] = item_list
             match_detail_db.append(db)
 
         # one match, ten match_details

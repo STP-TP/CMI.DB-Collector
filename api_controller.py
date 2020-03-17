@@ -1,17 +1,21 @@
 import json
 import api_comm as comm
-import DB_class.DB_other as DbOther
+import DB_class.DB_other as otherDb
 import DB_class.DB_user as userDb
+import DB_class.DB_match as matchDb
+import DB_class.DB_match_detail as matchDetailDb
 import DB_class.user_param.param_db as db_naming
 import datetime
 from DB_class.DB_parser import *
 
 
-
 class CollectDbFlow:
-    db_char = DbOther.GameCharacters()
-    db_item = DbOther.GameItems()
+    db_char = otherDb.GameCharacters()
+    db_item = otherDb.GameItems()
     db_user = userDb.User()
+    db_match_normal = matchDb.MatchList(db_naming.normal)
+    db_match_rating = matchDb.MatchList(db_naming.rating)
+    db_match_detail = matchDetailDb.MatchDetailList()
     __db_collect_mode = False
     parser = ApiParser()
 
@@ -44,7 +48,6 @@ class CollectDbFlow:
         for char_id in char:
             res = self.__com.search_item("E ", "front", 100, [char_id[db_naming.character_id]])
             body = json.loads(res["body"])
-            print(body)
             for item in body.get("rows"):
                 self.db_item.overlap_check(item)
         self.db_item.save_db()
@@ -77,34 +80,51 @@ class CollectDbFlow:
         for ranker_id in body["rows"]:
             user_list.append(ranker_id[db_naming.player_id])
 
-        for player_id in user_list:
+        loop_user_count = 0
+        loop_match_count = 0
+        while True:
+            if len(user_list) <= loop_user_count:
+                break
+            print(loop_user_count, "/", len(user_list))
+            player_id = user_list[loop_user_count]
+            loop_user_count += 1
             if player_id in player_dict:
                 continue
             # get player info
             body = self.response_code(self.__com.lookup_player_info(player_id))
             if body is None:
-                return
+                continue
             user_db.append(body)
             body = self.response_code(self.__com.lookup_player_match(player_id, "rating", 100, day_start, day_end))
             player_dict[player_id] = True
             if body is None:
-                return
+                continue
             match_list = match_list + self.parser.player_matching_record(body)
-            for match_id in match_list:
+            while True:
+                if len(match_list) <= loop_match_count:
+                    break
+                match_id = match_list[loop_match_count]
+                loop_match_count += 1
                 if match_id in match_dict:
                     continue
                 body = self.response_code(self.__com.lookup_match_info(match_id))
                 match_dict[match_id] = True
                 if body is None:
-                    return
+                    continue
                 else:
                     res = self.parser.match_detail_info(match_id, body)
                     match_db.append(res[0])
                     match_detail_db = match_detail_db + res[1]
                     user_list = user_list + res[2]
-        print(len(user_db))
-        print(len(match_db))
-        print(len(match_detail_db))
+
+        if self.__db_collect_mode:
+            self.db_user.update_new_db_list(user_db)
+            self.db_user.save_db()
+            self.db_match_rating.update_new_db_list(match_db)
+            self.db_match_rating.save_db()
+            self.db_match_detail.update_new_db_list(match_detail_db)
+            self.db_match_detail.save_db()
+            print("DB Save End")
 
     def trigger_normal_based(self, rank_min, rank_max, days):
         for char in CollectDbFlow.db_char.get_db():
@@ -156,6 +176,6 @@ a.collect_character_db()"""
 
 a.set_collect_mode(True)
 
-a. trigger_rating_based(0, 150, 1)
+a. trigger_rating_based(0, 20, 1)
 # a.trigger_normal_based(0, 5, 1)
 # a.trigger_nickname("Papico", "normal")

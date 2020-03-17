@@ -13,8 +13,12 @@ rating_stop = "ratingStop"
 normal_win = "normalWin"
 normal_lose = "normalLose"
 normal_stop = "normalStop"
+win_count = "winCount"
+lose_count = "loseCount"
+stop_count = "stopCount"
 match_id = "matchId"
 result = "result"
+random = "random"
 party_user_count = "partyUserCount"
 character_id = "characterId"
 level = "level"
@@ -46,6 +50,8 @@ equip_slot_name = "equipSlotName"
 attribute_id = "attributeId"
 attribute_name = "attributeName"
 character_name = "characterName"
+rating = "rating"
+normal = "normal"
 
 user_db = {
     player_id: str,
@@ -72,6 +78,7 @@ match_detail_db = {
     match_id: str,
     player_id: str,
     result: str,
+    random: bool,
     party_user_count: int,
     character_id: str,
     level: int,

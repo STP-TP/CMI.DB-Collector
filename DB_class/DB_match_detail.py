@@ -12,4 +12,4 @@ class MatchDetailList(DbManager):
         return row
 
     def init_path(self, option):
-        self._path = path_define.user_path
+        self._path = path_define.match_detail_path
