@@ -98,9 +98,10 @@ class ApiParser:
             for attribute in pos[db_naming.attribute]:
                 attribute_list.append(attribute["id"])
             db[db_naming.attribute] = attribute_list
-            item_list = []
+            item_temp_dict = {}
             for item in user[db_naming.items]:
-                item_list.append(item[db_naming.item_id])
+                item_temp_dict[item[db_naming.slot_code]] = item[db_naming.item_id]
+            item_list = list(sorted(item_temp_dict.items()))
             db[db_naming.items] = item_list
             match_detail_db.append(db)
 
