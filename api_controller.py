@@ -33,52 +33,13 @@ class CollectDbFlow:
             print(response["explain"])
             return None
 
-    # Collect character DB
-    def collect_character_db(self):
-        body = self.response_code(self.__com.get_character_info())
-        if body is None:
-            return
-
-        for chars in body.get("rows"):
-            self.db_char.overlap_check(chars)
-        self.db_char.save_db()
-
-    def collect_items(self):
-        char = self.db_char.get_db()
-        for char_id in char:
-            res = self.__com.search_item("E ", "front", 100, [char_id[db_naming.character_id]])
-            body = json.loads(res["body"])
-            for item in body.get("rows"):
-                self.db_item.overlap_check(item)
-        self.db_item.save_db()
-
-    def collect_ranker_id_tier_score(self, rank_min, rank_max):
-        res = self.__com.lookup_total_rating_ranking(rank_min, rank_max)
-        body = json.loads(res["body"])
-        for ranker_id in body["rows"]:
-            res = self.__com.lookup_player_info(ranker_id[db_naming.player_id])
-            body_id = json.loads(res["body"])
-            self.db_user.overlap_check(body_id)
-        self.db_user.save_db()
-
-    def trigger_rating_based(self, rank_min, rank_max, days):
-        user_list = []
+    def collect_game_information(self, user_list, day_start, day_end, game_type=db_naming.rating):
         match_list = []
         user_db = []
         match_db = []
         match_detail_db = []
         player_dict = {}
         match_dict = {}
-
-        day_end = datetime.datetime.now()
-        day_start = datetime.datetime.now() - datetime.timedelta(days)
-
-        # get ranking list
-        body = self.response_code(self.__com.lookup_total_rating_ranking(rank_min, rank_max))
-        if body is None:
-            return
-        for ranker_id in body["rows"]:
-            user_list.append(ranker_id[db_naming.player_id])
 
         loop_user_count = 0
         loop_match_count = 0
@@ -95,7 +56,7 @@ class CollectDbFlow:
             if body is None:
                 continue
             user_db.append(body)
-            body = self.response_code(self.__com.lookup_player_match(player_id, "rating", 100, day_start, day_end))
+            body = self.response_code(self.__com.lookup_player_match(player_id, game_type, 100, day_start, day_end))
             player_dict[player_id] = True
             if body is None:
                 continue
@@ -116,57 +77,95 @@ class CollectDbFlow:
                     match_db.append(res[0])
                     match_detail_db = match_detail_db + res[1]
                     user_list = user_list + res[2]
+        return user_db, match_db, match_detail_db
+
+    def save_play_info_to_pickle(self, user_db, match_db, match_detail_db):
+        self.db_user.update_new_db_list(user_db)
+        self.db_user.save_db()
+        self.db_match_rating.update_new_db_list(match_db)
+        self.db_match_rating.save_db()
+        self.db_match_detail.update_new_db_list(match_detail_db)
+        self.db_match_detail.save_db()
+
+    def collect_character_db(self, save_on_off=False):
+        """ return: character db list """
+        body = self.response_code(self.__com.get_character_info())
+        if body is None:
+            return
+        character_db = self.parser.character_info(body)
+        return character_db
+
+    def collect_items(self):
+        char = self.db_char.get_db()
+        for char_id in char:
+            res = self.__com.search_item("E ", "front", 100, [char_id[db_naming.character_id]])
+            body = json.loads(res["body"])
+            for item in body.get("rows"):
+                self.db_item.overlap_check(item)
+        self.db_item.save_db()
+
+    def collect_rating_ranker_id(self, rank_min, rank_max):
+        user_list = []
+        body = self.response_code(self.__com.lookup_total_rating_ranking(rank_min, rank_max))
+        if body is None:
+            return
+        for ranker_id in body["rows"]:
+            user_list.append(ranker_id[db_naming.player_id])
+
+        return user_list
+
+    def collect_normal_ranker_id(self, rank_min, rank_max):
+        user_list = []
+        character_db = self.collect_character_db()
+        for character in character_db:
+            char_id = character[db_naming.character_id]
+            body = self.response_code(self.__com.lookup_total_character_ranking(char_id, "exp", rank_min, rank_max))
+            if body is None:
+                return
+            char_rank_id = self.parser.character_ranking(body)
+            user_list += char_rank_id
+
+        return user_list
+
+    def trigger_rating_based(self, rank_min, rank_max, days):
+        day_end = datetime.datetime.now()
+        day_start = datetime.datetime.now() - datetime.timedelta(days)
+
+        user_list = self.collect_rating_ranker_id(rank_min, rank_max)
+        [user_db, match_db, match_detail_db] = self.collect_game_information(user_list,
+                                                                             day_start, day_end, db_naming.rating)
 
         if self.__db_collect_mode:
-            self.db_user.update_new_db_list(user_db)
-            self.db_user.save_db()
-            self.db_match_rating.update_new_db_list(match_db)
-            self.db_match_rating.save_db()
-            self.db_match_detail.update_new_db_list(match_detail_db)
-            self.db_match_detail.save_db()
+            self.save_play_info_to_pickle(user_db, match_db, match_detail_db)
             print("DB Save End")
 
     def trigger_normal_based(self, rank_min, rank_max, days):
-        for char in CollectDbFlow.db_char.get_db():
-            res = self.__com.lookup_total_character_ranking(char["characterId"], "exp", rank_min, rank_max)
-            body = json.loads(res["body"])
-            rows = body["rows"]
-            for ranker_id in rows:
-                # user list
-                res = self.__com.lookup_player_info(ranker_id["playerId"])
-                body_id = json.loads(res["body"])
-                self.db_user.overlap_check(body_id)
-
-                # user match info
-                day_end = datetime.datetime.now()
-                day_start = datetime.datetime.now() - datetime.timedelta(days)
-                player_id = ranker_id["playerId"]
-                res = self.__com.lookup_player_match(player_id, "normal", 100, day_start, day_end)
-                body = json.loads(res["body"])
-                rows = body["matches"]["rows"]
-                print(rows)
-            self.db_user.save_db()
-
-    def trigger_nickname(self, nickname, game_type="rating", days=7):
-        res = self.__com.lookup_nickname(nickname)
-        body = json.loads(res["body"])
-        rows = body["rows"]
-        if len(rows) == 0:
-            pass
-
         day_end = datetime.datetime.now()
         day_start = datetime.datetime.now() - datetime.timedelta(days)
-        res = self.__com.lookup_player_match(rows[0]["playerId"], game_type, 100, day_start, day_end)
-        body = json.loads(res["body"])
-        rows = body["matches"]["rows"]
-        print(rows)  # match info save
 
-        for match in rows:
-            res = self.__com.lookup_match_info(match["matchId"])
-            body = json.loads(res["body"])
-            print(body)
-            # rows_match = body["rows"]
-            # print(rows_match)
+        user_list = self.collect_normal_ranker_id(rank_min, rank_max)
+        [user_db, match_db, match_detail_db] = self.collect_game_information(user_list,
+                                                                             day_start, day_end, db_naming.normal)
+
+        if self.__db_collect_mode:
+            self.save_play_info_to_pickle(user_db, match_db, match_detail_db)
+            print("DB Save End")
+
+    def trigger_nickname(self, nickname, game_type=db_naming.rating, days=7):
+        day_end = datetime.datetime.now()
+        day_start = datetime.datetime.now() - datetime.timedelta(days)
+
+        body = self.response_code(self.__com.lookup_nickname(nickname))
+        if body is None:
+            return
+        user_list = self.parser.player_search(body)
+
+        [user_db, match_db, match_detail_db] = self.collect_game_information(user_list,
+                                                                             day_start, day_end, game_type)
+
+        if self.__db_collect_mode:
+            self.save_play_info_to_pickle(user_db, match_db, match_detail_db)
+            print("DB Save End")
 
 
 a = CollectDbFlow()
@@ -176,6 +175,6 @@ a.collect_character_db()"""
 
 a.set_collect_mode(True)
 
-a. trigger_rating_based(0, 20, 1)
-# a.trigger_normal_based(0, 5, 1)
+# a. trigger_rating_based(0, 20, 1)
+a.trigger_normal_based(0, 5, 1)
 # a.trigger_nickname("Papico", "normal")

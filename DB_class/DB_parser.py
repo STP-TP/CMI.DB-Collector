@@ -14,8 +14,8 @@ def convert_str_to_datetime(date: str):
 
 class ApiParser:
     __user = User()
-    __match_rating = MatchList("rating")
-    __match_normal = MatchList("normal")
+    __match_rating = MatchList(db_naming.rating)
+    __match_normal = MatchList(db_naming.normal)
     __detail = MatchDetailList()
 
     __position = GamePositions()
@@ -43,17 +43,19 @@ class ApiParser:
     def player_search(body):
         return body["rows"][db_naming.player_id]
 
-    def player_info(self, body):
+    @staticmethod
+    def player_info(body):
+        user_db = copy.deepcopy(db_naming.user_db)
         for key, val in body.items():
             if key == "records":
-                self.__user.db[db_naming.rating_win] = val[0][db_naming.win_count]
-                self.__user.db[db_naming.rating_lose] = val[0][db_naming.lose_count]
-                self.__user.db[db_naming.rating_stop] = val[0][db_naming.stop_count]
-                self.__user.db[db_naming.normal_win] = val[1][db_naming.win_count]
-                self.__user.db[db_naming.normal_lose] = val[0][db_naming.lose_count]
-                self.__user.db[db_naming.normal_stop] = val[0][db_naming.stop_count]
-            self.__user.db[key] = val
-        return self.__user.db
+                user_db[db_naming.rating_win] = val[0][db_naming.win_count]
+                user_db[db_naming.rating_lose] = val[0][db_naming.lose_count]
+                user_db[db_naming.rating_stop] = val[0][db_naming.stop_count]
+                user_db[db_naming.normal_win] = val[1][db_naming.win_count]
+                user_db[db_naming.normal_lose] = val[0][db_naming.lose_count]
+                user_db[db_naming.normal_stop] = val[0][db_naming.stop_count]
+            user_db[key] = val
+        return user_db
 
     @staticmethod
     def player_matching_record(body):  # return match id list
@@ -63,24 +65,25 @@ class ApiParser:
             match_list.append(match[db_naming.match_id])
         return match_list
 
-    def match_detail_info(self, match_id, body):
-        match = copy.deepcopy(self.__match_normal.db)
+    @staticmethod
+    def match_detail_info(match_id, body):
+        match_db = copy.deepcopy(db_naming.match_db)
         if body[db_naming.game_type_id] == db_naming.normal:
-            match[db_naming.game_type_id] = db_naming.normal
+            match_db[db_naming.game_type_id] = db_naming.normal
         elif body[db_naming.game_type_id] == db_naming.rating:
-            match[db_naming.game_type_id] = db_naming.rating
-        match[db_naming.match_id] = match_id
-        match[db_naming.date] = convert_str_to_datetime(body[db_naming.date])
-        match[db_naming.game_type_id] = body[db_naming.game_type_id]
+            match_db[db_naming.game_type_id] = db_naming.rating
+        match_db[db_naming.match_id] = match_id
+        match_db[db_naming.date] = convert_str_to_datetime(body[db_naming.date])
+        match_db[db_naming.game_type_id] = body[db_naming.game_type_id]
         player_list = []
         for result in body["teams"]:
             for user in result[db_naming.players]:
                 player_list.append(user)
-        match[db_naming.players] = player_list
+        match_db[db_naming.players] = player_list
 
         match_detail_db = []
         for inx, user in enumerate(body[db_naming.players]):
-            db = copy.deepcopy(self.__detail.db)
+            db = copy.deepcopy(db_naming.match_detail_db)
             db[db_naming.match_id] = match_id
             db[db_naming.player_id] = user[db_naming.player_id]
             if inx < 5:
@@ -106,15 +109,38 @@ class ApiParser:
             match_detail_db.append(db)
 
         # one match, ten match_details
-        return [match, match_detail_db, player_list]
+        return [match_db, match_detail_db, player_list]
 
     def total_ranking(self, body):
         pass
 
-    def character_ranking(self, body):
-        pass
+    @staticmethod
+    def character_ranking(body):
+        user_list = []
+        for user in body["rows"]:
+            user_list.append(user[db_naming.player_id])
+        return user_list
 
     def battle_arena_ranking(self, body):
+        pass
+
+    def item_search(self, body):
+        pass
+
+    def item_info(self, body):
+        pass
+
+    def item_multi_info(self, body):
+        pass
+
+    @staticmethod
+    def character_info(body):
+        char_db = []
+        for character in body["rows"]:
+            char_db.append(character)
+        return char_db
+
+    def position_info(self, body):
         pass
 
     def execute_api_number(self, number):
