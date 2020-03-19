@@ -1,4 +1,10 @@
 import pymysql
+from DB_class.user_param.param_db import *
+import datetime
+
+
+def convert_datetime_to_str(date):
+    return date.strftime("%Y%m%d%H%M%S")
 
 
 class MysqlController:
@@ -6,33 +12,46 @@ class MysqlController:
         self.conn = pymysql.connect(host=host, user=id, password=pw, db=db_name, charset='utf8')
         self.curs = self.conn.cursor()
 
-    def insertAttribute(self, attribute_ID, attribute_name, attribute_explain, position_name):
-        sql = 'INSERT INTO attributeTbl VALUES (%s, %s, %s, %s)'
-        self.curs.execute(sql,(attribute_ID, attribute_name, attribute_explain, position_name))
+    def insert_attribute(self, db_input):
+        sql = 'INSERT INTO attributeTbl VALUES (%s, %s, %s)'
+        self.curs.execute(sql,(db_input["attribute_id"][sql], db_input["attribute_name"][sql],
+                               db_input["attribute_explain"][sql]))
         self.conn.commit()
 
-    def insertCharacter(self, character_ID, character_name):
+    def insert_character(self, db_input):
         sql = 'INSERT INTO characterTbl VALUES (%s, %s)'
-        self.curs.execute(sql, (character_ID, character_name))
+        self.curs.execute(sql, (db_input["character_id"][sql], db_input["character_name"][sql]))
         self.conn.commit()
 
-    def insertMatch(self, date, match_ID, map_ID, map_name, gametype_ID):
+    def insert_match(self, db_input):
         sql = 'INSERT INTO matchTbl VALUES (%s, %s, %s, %s, %s)'
-        self.curs.execute(sql, (date, match_ID, map_ID, map_name, gametype_ID))
+        self.curs.execute(sql, (convert_datetime_to_str(db_input["date"][sql]), db_input["match_id"][sql],
+                                db_input["map_id"][sql], db_input["map_name"][sql], db_input["game_type_id"][sql]))
         self.conn.commit()
 
-    def insertMatchDetail(self, match_ID, player_ID, result, random, party_user_count, character_ID, level,
-                          kill_count, death_count, assist_count, attack_point, damage_point, battle_point, sight_point,
-                          play_time, position_Name, attribute_ID_lv1, attribute_ID_lv2, attribute_ID_lv3):
-        sql = 'INSERT INTO match_detailTbl VALUES ()'
+    def insert_match_detail(self, db_input):
+        sql = 'INSERT INTO match_detailTbl VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, ' \
+              '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, )'
+        self.curs.execute(sql, (db_input["match_id"][sql], db_input["player_id"][sql], db_input["result"][sql],
+                                db_input["random"][sql], db_input["random"][sql], db_input["random"][sql],
+                                ))
+        self.conn.commit()
 
-    def insertPosition(self):
-        sql = 'INSERT INTO positionTbl VALUES ()'
+    def insert_position(self, db_input):
+        sql = 'INSERT INTO positionTbl VALUES (%s, %s)'
+        self.curs.execute(sql, (db_input["position_name"][sql], db_input["position_explain"][sql]))
+        self.conn.commit()
 
-    def insertUser(self):
-        sql = 'INSERT INTO userTbl VALUES ()'
+    def insert_user(self, db_input):
+        sql = 'INSERT INTO userTbl VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+        self.curs.execute(sql, (db_input[player_id[sql]], db_input[nickname[sql]], int(db_input[grade[sql]]),
+                                db_input[clan_name[sql]], int(db_input[rating_point[sql]]),
+                                int(db_input[max_rating_point[sql]]), db_input[tier_name[sql]],
+                                int(db_input[rating_win[sql]]), int(db_input[rating_lose[sql]]),
+                                int(db_input[rating_stop[sql]]), int(db_input[normal_win[sql]]),
+                                int(db_input[normal_lose[sql]]), int(db_input[normal_stop[sql]])))
 
-    def testCreate(self):
+    def test_create(self):
         sql = '''
                 CREATE TABLE USERS 
                 (
@@ -51,10 +70,35 @@ class MysqlController:
         self.curs.execute(sql)
         self.conn.commit()
 
+    def test_insert(self):
+        sql = '''
+                   INSERT INTO TESTS VALUES (%s, %s)
+                   '''
+        self.curs.execute(sql, ("19910114144400", 142))
+        self.conn.commit()
+
     def disconnect_db(self):
         self.conn.close()
 
 
+db = {
+    "player_id": "9ff6b86fcb477249ea6ef8ab57ec4795",
+    "nickname": "아얌",
+    "grade": "51",
+    "clan_name": "마음속하유안",
+    "rating_point": "1302",
+    "max_rating_point":"1302",
+    "tier_name": "히어로",
+    "rating_win": "5801",
+    "rating_lose": "12",
+    "rating_stop": "0",
+    "normal_win": "22",
+    "normal_lose": "1",
+    "normal_stop": "0"
+}
+
 testSQL = MysqlController('localhost', 'root', 'vmfhwprxm2@', 'modeldb')
 #testSQL.insertAttribute('testID','testAtt','testAttexp','탱커')
+#testSQL.test_query()
+testSQL.insert_user(db)
 testSQL.disconnect_db()

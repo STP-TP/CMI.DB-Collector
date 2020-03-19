@@ -67,12 +67,12 @@ user_db = {
     rating_point: int,
     max_rating_point: int,
     tier_name: str,
-    rating_win: str,
-    rating_lose: str,
-    rating_stop: str,
-    normal_win: str,
-    normal_lose: str,
-    normal_stop: str
+    rating_win: int,
+    rating_lose: int,
+    rating_stop: int,
+    normal_win: int,
+    normal_lose: int,
+    normal_stop: int
 }
 match_db = {
     date: type(datetime),
