@@ -76,8 +76,10 @@ user_db = {
 }
 match_db = {
     date: type(datetime),
-    game_type_id: str,
     match_id: str,
+    map_id: str,
+    map_name: str,
+    game_type_id: str,
     players: list  # player id 0-4 are win players, 5-9 are lose players
 }
 match_detail_db = {
@@ -103,10 +105,6 @@ match_detail_db = {
 position_db = {
     position_name: str,
     position_explain: str
-}
-map_db = {
-    map_id: str,
-    map_name: str
 }
 item_db = {
     item_id: str,
