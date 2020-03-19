@@ -3,6 +3,7 @@ from DB_class.DB_user import *
 from DB_class.DB_match import *
 from DB_class.DB_match_detail import *
 from DB_class.DB_other import *
+from DB_class.user_param.param_db import *
 import datetime
 import copy
 
@@ -13,8 +14,8 @@ def convert_str_to_datetime(date: str):
 
 class ApiParser:
     __user = User()
-    __match_rating = MatchList("rating")
-    __match_normal = MatchList("normal")
+    __match_rating = MatchList(rating)
+    __match_normal = MatchList(normal)
     __detail = MatchDetailList()
 
     __position = GamePositions()
@@ -40,79 +41,108 @@ class ApiParser:
 
     @staticmethod
     def player_search(body):
-        return body["rows"]["playerId"]
+        return body["rows"][player_id[api]]
 
-    def player_info(self, body):
+    @staticmethod
+    def player_info(body):
+        temp_user_db = copy.deepcopy(user_db)
         for key, val in body.items():
             if key == "records":
-                self.__user.db["ratingWin"] = val[0]["winCount"]
-                self.__user.db["ratingLose"] = val[0]["loseCount"]
-                self.__user.db["ratingStop"] = val[0]["stopCount"]
-                self.__user.db["normalWin"] = val[1]["winCount"]
-                self.__user.db["normalLose"] = val[0]["loseCount"]
-                self.__user.db["normalStop"] = val[0]["stopCount"]
-            self.__user.db[key] = val
-        return self.__user.db
+                temp_user_db[rating_win[sql]] = val[0][win_count[api]]
+                temp_user_db[rating_lose[sql]] = val[0][lose_count[api]]
+                temp_user_db[rating_stop[sql]] = val[0][stop_count[api]]
+                temp_user_db[normal_win[sql]] = val[1][win_count[api]]
+                temp_user_db[normal_lose[sql]] = val[0][lose_count[api]]
+                temp_user_db[normal_stop[sql]] = val[0][stop_count[api]]
+            temp_user_db[key] = val
+        return temp_user_db
 
     @staticmethod
     def player_matching_record(body):  # return match id list
         matches = body["matches"]
-        match_list = []
+        temp_match_list = []
         for match in matches["rows"]:
-            match_list.append(match["matchId"])
-        return match_list
+            temp_match_list.append(match[match_id[api]])
+        return temp_match_list
 
-    def match_detail_info(self, match_id, body):
-        match = copy.deepcopy(self.__match_normal.db)
-        if body["gameTypeId"] == "normal":
-            match["gameTypeId"] = "normal"
-        elif body["gameTypeId"] == "rating":
-            match["gameTypeId"] = "rating"
-        match["matchId"] = match_id
-        match["date"] = convert_str_to_datetime(body["date"])
-        match["gameTypeId"] = body["gameTypeId"]
-        player_list = []
-        for result in body["teams"]:
-            for user in result["players"]:
-                player_list.append(user)
-        match["players"] = player_list
+    @staticmethod
+    def match_detail_info(param_match_id, body):
+        local_match_db = copy.deepcopy(match_db)
+        if body[game_type_id[api]] == normal:
+            local_match_db[game_type_id[sql]] = normal
+        elif body[game_type_id[api]] == rating:
+            local_match_db[game_type_id[sql]] = rating
+        local_match_db[match_id[sql]] = match_id
+        local_match_db[date[sql]] = convert_str_to_datetime(body[date[api]])
+        local_match_db[game_type_id[sql]] = body[game_type_id[api]]
+        local_player_list = []
+        for team in body["teams"]:
+            for user in team[players[api]]:
+                local_player_list.append(user)
+        match_db[players[sql]] = local_player_list
+        match_db[map_id[sql]] = body[players[api]][0]["map"][map_id[api]]
+        match_db[map_name[sql]] = body[players[api]][0]["map"][map_name[api]]
 
-        match_detail_db = []
-        for inx, user in enumerate(body["players"]):
-            db = copy.deepcopy(self.__detail.db)
-            db["matchId"] = match_id
-            db["playerId"] = user["playerId"]
+        local_match_detail_db = []
+        for inx, user in enumerate(body[players[api]]):
+            temp_match_detail_db = copy.deepcopy(match_detail_db)
+            temp_match_detail_db[match_id[sql]] = param_match_id
+            temp_match_detail_db[player_id[sql]] = user[player_id[api]]
             if inx < 5:
-                db["result"] = "win"
+                temp_match_detail_db[result[sql]] = "win"
             else:
-                db["result"] = "lose"
+                temp_match_detail_db[result[sql]] = "lose"
             play_info = user["playInfo"]
             for key, val in play_info.items():
-                if key == "characterName":
+                if key == character_name[api]:
                     continue
-                db[key] = val
-            pos = user["position"]
-            db["position"] = pos["name"]
-            attribute_list = []
-            for attribute in pos["attribute"]:
-                attribute_list.append(attribute["id"])
-            db["attribute"] = attribute_list
-            item_list = []
-            for item in user["items"]:
-                item_list.append(item["itemId"])
-            db["items"] = item_list
-            match_detail_db.append(db)
+                temp_match_detail_db[key] = val
+            pos = user[position[api]]
+            temp_match_detail_db[position_name[sql]] = pos[position_name[api]]
+            temp_attribute_list = []
+            for attributes in pos[attribute[api]]:
+                temp_attribute_list.append(attributes[attribute_id[api]])
+            temp_match_detail_db[attribute[sql]] = temp_attribute_list
+            item_temp_dict = {}
+            for item in user[items[api]]:
+                item_temp_dict[item[slot_code[sql]]] = item[item_id[api]]
+            temp_item_list = list(sorted(item_temp_dict.items()))
+            temp_match_detail_db[items[sql]] = temp_item_list
+            local_match_detail_db.append(temp_match_detail_db)
 
         # one match, ten match_details
-        return [match, match_detail_db, player_list]
+        return [local_match_db, local_match_detail_db, local_player_list]
 
     def total_ranking(self, body):
         pass
 
-    def character_ranking(self, body):
-        pass
+    @staticmethod
+    def character_ranking(body):
+        user_list = []
+        for user in body["rows"]:
+            user_list.append(user[player_id[api]])
+        return user_list
 
     def battle_arena_ranking(self, body):
+        pass
+
+    def item_search(self, body):
+        pass
+
+    def item_info(self, body):
+        pass
+
+    def item_multi_info(self, body):
+        pass
+
+    @staticmethod
+    def character_info(body):
+        char_db = []
+        for character in body["rows"]:
+            char_db.append(character)
+        return char_db
+
+    def position_info(self, body):
         pass
 
     def execute_api_number(self, number):

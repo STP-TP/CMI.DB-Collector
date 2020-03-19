@@ -1,51 +1,63 @@
 import datetime
 
-player_id = "playerId"
-nickname = "nickname"
-grade = "grade"
-clan_name = "clanName"
-rating_point = "ratingPoint"
-max_rating_point = "maxRatingPoint"
-tier_name = "tierName"
-rating_win = "ratingWin"
-rating_lose = "ratingLose"
-rating_stop = "ratingStop"
-normal_win = "normalWin"
-normal_lose = "normalLose"
-normal_stop = "normalStop"
-match_id = "matchId"
-result = "result"
-party_user_count = "partyUserCount"
-character_id = "characterId"
-level = "level"
-kill_count = "killCount"
-death_count = "deathCount"
-assist_count = "assistCount"
-attack_point = "attackPoint"
-damage_point = "damagePoint"
-battle_point = "battlePoint"
-sight_point = "sightPoint"
-play_time = "playTime"
-position = "position"
-attribute = "attribute"
-items = "items"
-date = "date"
-game_type_id = "gameTypeId"
-players = "players"
-name = "name"
-explain = "explain"
-map_id = "mapId"
-item_id = "itemId"
-item_name = "itemName"
-slot_code = "slotCode"
-slot_name = "slotName"
-rarity_code = "rarityCode"
-rarity_name = "rarityName"
-equip_slot_code = "equipSlotCode"
-equip_slot_name = "equipSlotName"
-attribute_id = "attributeId"
-attribute_name = "attributeName"
-character_name = "characterName"
+api = 0
+sql = 1
+
+""" field_name = [api_name][sql_name] """
+player_id = ["playerId", "playerId"]
+nickname = ["nickname", "nickname"]
+grade = ["grade", "grade"]
+clan_name = ["clanName", "clanName"]
+rating_point = ["ratingPoint", "ratingPoint"]
+max_rating_point = ["maxRatingPoint", "maxRatingPoint"]
+tier_name = ["tierName", "tierName"]
+rating_win = ["win", "ratingWin"]
+rating_lose = ["lose", "ratingLose"]
+rating_stop = ["stop", "ratingStop"]
+normal_win = ["win", "normalWin"]
+normal_lose = ["lose", "normalLose"]
+normal_stop = ["stop", "normalStop"]
+win_count = ["winCount", "winCount"]
+lose_count = ["loseCount", "loseCount"]
+stop_count = ["stopCount", "stopCount"]
+match_id = ["matchId", "matchId"]
+result = ["result", "result"]
+random = ["random", "random"]
+party_user_count = ["partyUserCount", "partyUserCount"]
+character_id = ["characterId", "characterId"]
+level = ["level", "level"]
+kill_count = ["killCount", "killCount"]
+death_count = ["deathCount", "deathCount"]
+assist_count = ["assistCount", "assistCount"]
+attack_point = ["attackPoint", "attackPoint"]
+damage_point = ["damagePoint", "damagePoint"]
+battle_point = ["battlePoint", "battlePoint"]
+sight_point = ["sightPoint", "sightPoint"]
+play_time = ["playTime", "playTime"]
+position = ["position", "position"]
+attribute = ["attribute", "attribute"]
+items = ["items", "items"]
+date = ["date", "date"]
+game_type_id = ["gameTypeId", "gameTypeId"]
+players = ["players", "players"]
+position_name = ["name", "positionName"]
+position_explain = ["explain", "explain"]
+map_id = ["mapId", "mapId"]
+map_name = ["name", "mapName"]
+item_id = ["itemId", "itemId"]
+item_name = ["itemName", "itemName"]
+slot_code = ["slotCode", "slotCode"]
+slot_name = ["slotName", "slotName"]
+rarity_code = ["rarityCode", "rarityCode"]
+rarity_name = ["rarityName", "rarityName"]
+equip_slot_code = ["equipSlotCode", "equipSlotCode"]
+equip_slot_name = ["equipSlotName", "equipSlotName"]
+attribute_id = ["id", "attributeId"]
+attribute_name = ["attributeName", "attributeName"]
+attribute_explain = ["attributeExplain", "attributeExplain"]
+character_name = ["characterName", "characterName"]
+rating = "rating"
+normal = "normal"
 
 user_db = {
     player_id: str,
@@ -72,6 +84,7 @@ match_detail_db = {
     match_id: str,
     player_id: str,
     result: str,
+    random: bool,
     party_user_count: int,
     character_id: str,
     level: int,
@@ -88,12 +101,12 @@ match_detail_db = {
     items: list
 }
 position_db = {
-    name: str,
-    explain: str
+    position_name: str,
+    position_explain: str
 }
 map_db = {
     map_id: str,
-    name: str
+    map_name: str
 }
 item_db = {
     item_id: str,
@@ -108,7 +121,7 @@ item_db = {
 attribute_db = {
     attribute_id: str,
     attribute_name: str,
-    explain: str
+    attribute_explain: str
 }
 character_db = {
     character_id: str,

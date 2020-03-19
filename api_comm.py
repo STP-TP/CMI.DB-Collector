@@ -34,8 +34,8 @@ class CommToApiServer:
     def __init__(self, api_key="0rYk7DYbNFelyQguZRmwhWxF1QhZ0yJP"):
         self.apiKey = "apikey=" + api_key
 
-    def _get_api_body(self, request_url):
-        # 횟수 제한 확인
+    @staticmethod
+    def _api_communication_count():
         if len(CommToApiServer.__api_start_time) is 0:
             CommToApiServer.__api_start_time.append(datetime.datetime.now())
         else:
@@ -49,16 +49,32 @@ class CommToApiServer:
             if api_cnt >= 100:
                 del CommToApiServer.__api_start_time[0]
 
-        try:
-            response = socket.urlopen(request_url)
-            res_code = response.getcode()
-            response_body = response.read().decode('utf-8')
-            return self._get_response_code(res_code, response_body)
-        except urlerr.URLError as err:
-            err_return = {"code": err.code,
-                          "explain": err.reason,
-                          "body": ""}
-            return err_return
+    def _get_api_body(self, request_url):
+        # 횟수 제한 확인
+        self._api_communication_count()
+        err_return = {}
+        for i in range(5):
+            try:
+                response = socket.urlopen(request_url)
+                res_code = response.getcode()
+                response_body = response.read().decode('utf-8')
+                return self._get_response_code(res_code, response_body)
+            except urlerr.HTTPError as err:
+                err_return = {"code": err.code,
+                              "explain": err.reason,
+                              "body": ""}
+                print("HTTP Error !!")
+                print(err.reason)
+                print("(", i, "/", 5, ")retry...")
+                time.sleep(0.5)
+            except urlerr.URLError as err:
+                err_return = {"explain": err.reason,
+                              "body": ""}
+                print("URL Error !!")
+                print(err.reason)
+                print("(", i, "/", 5, ")retry...")
+                time.sleep(0.5)
+        return err_return
 
     def _get_response_code(self, code, response_body=""):
         api_return = {"code": code,
