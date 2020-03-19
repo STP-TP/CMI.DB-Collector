@@ -4,7 +4,7 @@ import DB_class.DB_other as otherDb
 import DB_class.DB_user as userDb
 import DB_class.DB_match as matchDb
 import DB_class.DB_match_detail as matchDetailDb
-import DB_class.user_param.param_db as db_naming
+from DB_class.user_param.param_db import *
 import datetime
 from DB_class.DB_parser import *
 
@@ -13,8 +13,8 @@ class CollectDbFlow:
     db_char = otherDb.GameCharacters()
     db_item = otherDb.GameItems()
     db_user = userDb.User()
-    db_match_normal = matchDb.MatchList(db_naming.normal)
-    db_match_rating = matchDb.MatchList(db_naming.rating)
+    db_match_normal = matchDb.MatchList(normal)
+    db_match_rating = matchDb.MatchList(rating)
     db_match_detail = matchDetailDb.MatchDetailList()
     __db_collect_mode = False
     parser = ApiParser()
@@ -33,11 +33,11 @@ class CollectDbFlow:
             print(response["explain"])
             return None
 
-    def collect_game_information(self, user_list, day_start, day_end, game_type=db_naming.rating):
+    def collect_game_information(self, user_list, day_start, day_end, game_type=rating):
+        local_user_db = []
+        local_match_db = []
+        local_match_detail_db = []
         match_list = []
-        user_db = []
-        match_db = []
-        match_detail_db = []
         player_dict = {}
         match_dict = {}
 
@@ -47,44 +47,45 @@ class CollectDbFlow:
             if len(user_list) <= loop_user_count:
                 break
             print(loop_user_count, "/", len(user_list))
-            player_id = user_list[loop_user_count]
+            temp_player_id = user_list[loop_user_count]
             loop_user_count += 1
-            if player_id in player_dict:
+            if temp_player_id in player_dict:
                 continue
             # get player info
-            body = self.response_code(self.__com.lookup_player_info(player_id))
+            body = self.response_code(self.__com.lookup_player_info(temp_player_id))
             if body is None:
                 continue
             user_db.append(body)
-            body = self.response_code(self.__com.lookup_player_match(player_id, game_type, 100, day_start, day_end))
-            player_dict[player_id] = True
+            body = self.response_code(
+                self.__com.lookup_player_match(temp_player_id, game_type, 100, day_start, day_end))
+            player_dict[temp_player_id] = True
             if body is None:
                 continue
             match_list = match_list + self.parser.player_matching_record(body)
             while True:
                 if len(match_list) <= loop_match_count:
                     break
-                match_id = match_list[loop_match_count]
+                temp_match_id = match_list[loop_match_count]
                 loop_match_count += 1
-                if match_id in match_dict:
+                if temp_match_id in match_dict:
                     continue
-                body = self.response_code(self.__com.lookup_match_info(match_id))
-                match_dict[match_id] = True
+                body = self.response_code(self.__com.lookup_match_info(temp_match_id))
+                match_dict[temp_match_id] = True
                 if body is None:
                     continue
                 else:
-                    res = self.parser.match_detail_info(match_id, body)
-                    match_db.append(res[0])
-                    match_detail_db = match_detail_db + res[1]
+                    res = self.parser.match_detail_info(temp_match_id, body)
+                    local_match_db.append(res[0])
+                    local_match_detail_db = local_match_detail_db + res[1]
                     user_list = user_list + res[2]
-        return user_db, match_db, match_detail_db
+        return local_user_db, local_match_db, local_match_detail_db
 
-    def save_play_info_to_pickle(self, user_db, match_db, match_detail_db):
-        self.db_user.update_new_db_list(user_db)
+    def save_play_info_to_pickle(self, param_user_db, param_match_db, param_match_detail_db):
+        self.db_user.update_new_db_list(param_user_db)
         self.db_user.save_db()
-        self.db_match_rating.update_new_db_list(match_db)
+        self.db_match_rating.update_new_db_list(param_match_db)
         self.db_match_rating.save_db()
-        self.db_match_detail.update_new_db_list(match_detail_db)
+        self.db_match_detail.update_new_db_list(param_match_detail_db)
         self.db_match_detail.save_db()
 
     def collect_character_db(self, save_on_off=False):
@@ -92,13 +93,13 @@ class CollectDbFlow:
         body = self.response_code(self.__com.get_character_info())
         if body is None:
             return
-        character_db = self.parser.character_info(body)
-        return character_db
+        local_character_db = self.parser.character_info(body)
+        return local_character_db
 
     def collect_items(self):
         char = self.db_char.get_db()
         for char_id in char:
-            res = self.__com.search_item("E ", "front", 100, [char_id[db_naming.character_id]])
+            res = self.__com.search_item("E ", "front", 100, [char_id[character_id[api]]])
             body = json.loads(res["body"])
             for item in body.get("rows"):
                 self.db_item.overlap_check(item)
@@ -110,15 +111,15 @@ class CollectDbFlow:
         if body is None:
             return
         for ranker_id in body["rows"]:
-            user_list.append(ranker_id[db_naming.player_id])
+            user_list.append(ranker_id[player_id[api]])
 
         return user_list
 
     def collect_normal_ranker_id(self, rank_min, rank_max):
         user_list = []
-        character_db = self.collect_character_db()
-        for character in character_db:
-            char_id = character[db_naming.character_id]
+        temp_character_db = self.collect_character_db()
+        for character in temp_character_db:
+            char_id = character[character_id[api]]
             body = self.response_code(self.__com.lookup_total_character_ranking(char_id, "exp", rank_min, rank_max))
             if body is None:
                 return
@@ -128,43 +129,46 @@ class CollectDbFlow:
         return user_list
 
     def trigger_rating_based(self, rank_min, rank_max, days):
-        day_end = datetime.datetime.now()
-        day_start = datetime.datetime.now() - datetime.timedelta(days)
+        temp_day_end = datetime.datetime.now()
+        temp_day_start = datetime.datetime.now() - datetime.timedelta(days)
 
         user_list = self.collect_rating_ranker_id(rank_min, rank_max)
-        [user_db, match_db, match_detail_db] = self.collect_game_information(user_list,
-                                                                             day_start, day_end, db_naming.rating)
+        [local_user_db, local_match_db, local_match_detail_db] = self.collect_game_information(user_list,
+                                                                                               temp_day_start,
+                                                                                               temp_day_end, rating)
 
         if self.__db_collect_mode:
-            self.save_play_info_to_pickle(user_db, match_db, match_detail_db)
+            self.save_play_info_to_pickle(local_user_db, local_match_db, local_match_detail_db)
             print("DB Save End")
 
     def trigger_normal_based(self, rank_min, rank_max, days):
-        day_end = datetime.datetime.now()
-        day_start = datetime.datetime.now() - datetime.timedelta(days)
+        temp_day_end = datetime.datetime.now()
+        temp_day_start = datetime.datetime.now() - datetime.timedelta(days)
 
         user_list = self.collect_normal_ranker_id(rank_min, rank_max)
-        [user_db, match_db, match_detail_db] = self.collect_game_information(user_list,
-                                                                             day_start, day_end, db_naming.normal)
+        [local_user_db, local_match_db, local_match_detail_db] = self.collect_game_information(user_list,
+                                                                                               temp_day_start,
+                                                                                               temp_day_end, rating)
 
         if self.__db_collect_mode:
-            self.save_play_info_to_pickle(user_db, match_db, match_detail_db)
+            self.save_play_info_to_pickle(local_user_db, local_match_db, local_match_detail_db)
             print("DB Save End")
 
-    def trigger_nickname(self, nickname, game_type=db_naming.rating, days=7):
-        day_end = datetime.datetime.now()
-        day_start = datetime.datetime.now() - datetime.timedelta(days)
+    def trigger_nickname(self, param_nickname, game_type=rating, days=7):
+        temp_day_end = datetime.datetime.now()
+        temp_day_start = datetime.datetime.now() - datetime.timedelta(days)
 
         body = self.response_code(self.__com.lookup_nickname(nickname))
         if body is None:
             return
         user_list = self.parser.player_search(body)
 
-        [user_db, match_db, match_detail_db] = self.collect_game_information(user_list,
-                                                                             day_start, day_end, game_type)
+        [local_user_db, local_match_db, local_match_detail_db] = self.collect_game_information(user_list,
+                                                                                               temp_day_start,
+                                                                                               temp_day_end, rating)
 
         if self.__db_collect_mode:
-            self.save_play_info_to_pickle(user_db, match_db, match_detail_db)
+            self.save_play_info_to_pickle(local_user_db, local_match_db, local_match_detail_db)
             print("DB Save End")
 
 

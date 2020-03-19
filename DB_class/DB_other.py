@@ -1,10 +1,10 @@
 from DB_class.DB_manager import *
-import DB_class.user_param.param_db as db_naming
+from DB_class.user_param.param_db import *
 
 
 class GamePositions(DbManager):
-    db = db_naming.position_db
-    primary_key = db_naming.name
+    db = position_db
+    primary_key = position_name[sql]
 
     def overlap_check(self, db_input):
         row = next((index for (index, item) in enumerate(self._db_list)
@@ -16,8 +16,8 @@ class GamePositions(DbManager):
 
 
 class GameMaps(DbManager):
-    db = db_naming.map_db
-    primary_key = db_naming.map_id
+    db = map_db
+    primary_key = map_id[sql]
 
     def overlap_check(self, db_input):
         row = next((index for (index, item) in enumerate(self._db_list)
@@ -29,8 +29,8 @@ class GameMaps(DbManager):
 
 
 class GameItems(DbManager):
-    db = db_naming.item_db
-    primary_key = db_naming.item_id
+    db = item_db
+    primary_key = item_id[sql]
 
     def overlap_check(self, db_input):
         row = next((index for (index, item) in enumerate(self._db_list)
@@ -42,8 +42,8 @@ class GameItems(DbManager):
 
 
 class GameAttribute(DbManager):
-    db = db_naming.attribute_db
-    primary_key = db_naming.attribute_id
+    db = attribute_db
+    primary_key = attribute_id[sql]
 
     def overlap_check(self, db_input):
         row = next((index for (index, item) in enumerate(self._db_list)
@@ -55,8 +55,8 @@ class GameAttribute(DbManager):
 
 
 class GameCharacters(DbManager):
-    db = db_naming.character_db
-    primary_key = db_naming.character_id
+    db = character_db
+    primary_key = character_id[sql]
 
     def overlap_check(self, db_input):
         row = next((index for (index, char) in enumerate(self._db_list)

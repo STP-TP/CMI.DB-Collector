@@ -1,7 +1,7 @@
 import abc
 import pickle
 import DB_class.user_param.param_path as path_define
-import DB_class.user_param.param_db as db_naming
+from DB_class.user_param.param_db import *
 
 
 class DbManager(metaclass=abc.ABCMeta):
@@ -10,7 +10,7 @@ class DbManager(metaclass=abc.ABCMeta):
     _path: str
     _db: dict
 
-    def __init__(self, option=db_naming.rating):
+    def __init__(self, option=rating):
         self.init_path(option)
         if self.__db_init is False:
             self.load_db()
