@@ -76,8 +76,10 @@ user_db = {
 }
 match_db = {
     date[sql]: type(datetime),
-    game_type_id[sql]: str,
     match_id[sql]: str,
+    map_id[sql]: str,
+    map_name[sql]: str,
+    game_type_id[sql]: str,
     players[sql]: list  # player id 0-4 are win players, 5-9 are lose players
 }
 match_detail_db = {
@@ -96,17 +98,13 @@ match_detail_db = {
     battle_point[sql]: int,
     sight_point[sql]: int,
     play_time[sql]: int,
-    position[sql]: str,
+    position_name[sql]: str,
     attribute[sql]: list,
     items[sql]: list
 }
 position_db = {
     position_name[sql]: str,
     position_explain[sql]: str
-}
-map_db = {
-    map_id[sql]: str,
-    map_name[sql]: str
 }
 item_db = {
     item_id[sql]: str,
