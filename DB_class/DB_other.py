@@ -15,19 +15,6 @@ class GamePositions(DbManager):
         self._path = path_define.position_path
 
 
-class GameMaps(DbManager):
-    db = map_db
-    primary_key = map_id[sql]
-
-    def overlap_check(self, db_input):
-        row = next((index for (index, item) in enumerate(self._db_list)
-                    if item[self.primary_key] == db_input[self.primary_key]), None)
-        return row
-
-    def init_path(self, option):
-        self._path = path_define.map_path
-
-
 class GameItems(DbManager):
     db = item_db
     primary_key = item_id[sql]
