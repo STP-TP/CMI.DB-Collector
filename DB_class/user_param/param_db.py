@@ -60,68 +60,68 @@ rating = "rating"
 normal = "normal"
 
 user_db = {
-    player_id[sql]: str,
-    nickname[sql]: str,
-    grade[sql]: int,
-    clan_name[sql]: str,
-    rating_point[sql]: int,
-    max_rating_point[sql]: int,
-    tier_name[sql]: str,
-    rating_win[sql]: int,
-    rating_lose[sql]: int,
-    rating_stop[sql]: int,
-    normal_win[sql]: int,
-    normal_lose[sql]: int,
-    normal_stop[sql]: int
+    player_id[sql]: "",
+    nickname[sql]: "",
+    grade[sql]: 0,
+    clan_name[sql]: "",
+    rating_point[sql]: 0,
+    max_rating_point[sql]: 0,
+    tier_name[sql]: "",
+    rating_win[sql]: 0,
+    rating_lose[sql]: 0,
+    rating_stop[sql]: 0,
+    normal_win[sql]: 0,
+    normal_lose[sql]: 0,
+    normal_stop[sql]: 0
 }
 match_db = {
     date[sql]: type(datetime),
-    match_id[sql]: str,
-    map_id[sql]: str,
-    map_name[sql]: str,
-    game_type_id[sql]: str,
+    match_id[sql]: "",
+    map_id[sql]: "",
+    map_name[sql]: "",
+    game_type_id[sql]: "",
     players[sql]: list  # player id 0-4 are win players, 5-9 are lose players
 }
 match_detail_db = {
-    match_id[sql]: str,
-    player_id[sql]: str,
-    result[sql]: str,
+    match_id[sql]: "",
+    player_id[sql]: "",
+    result[sql]: "",
     random[sql]: bool,
-    party_user_count[sql]: int,
-    character_id[sql]: str,
-    level[sql]: int,
-    kill_count[sql]: int,
-    death_count[sql]: int,
-    assist_count[sql]: int,
-    attack_point[sql]: int,
-    damage_point[sql]: int,
-    battle_point[sql]: int,
-    sight_point[sql]: int,
-    play_time[sql]: int,
-    position_name[sql]: str,
+    party_user_count[sql]: 0,
+    character_id[sql]: "",
+    level[sql]: 0,
+    kill_count[sql]: 0,
+    death_count[sql]: 0,
+    assist_count[sql]: 0,
+    attack_point[sql]: 0,
+    damage_point[sql]: 0,
+    battle_point[sql]: 0,
+    sight_point[sql]: 0,
+    play_time[sql]: 0,
+    position_name[sql]: "",
     attribute[sql]: list,
     items[sql]: list
 }
 position_db = {
-    position_name[sql]: str,
-    position_explain[sql]: str
+    position_name[sql]: "",
+    position_explain[sql]: ""
 }
 item_db = {
-    item_id[sql]: str,
-    item_name[sql]: str,
-    slot_code[sql]: str,
-    slot_name[sql]: str,
-    rarity_code[sql]: str,
-    rarity_name[sql]: str,
-    equip_slot_code[sql]: str,
-    equip_slot_name[sql]: str
+    item_id[sql]: "",
+    item_name[sql]: "",
+    slot_code[sql]: 0,
+    slot_name[sql]: "",
+    rarity_code[sql]: 0,
+    rarity_name[sql]: "",
+    equip_slot_code[sql]: 0,
+    equip_slot_name[sql]: ""
 }
 attribute_db = {
-    attribute_id[sql]: str,
-    attribute_name[sql]: str,
-    attribute_explain[sql]: str
+    attribute_id[sql]: "",
+    attribute_name[sql]: "",
+    attribute_explain[sql]: ""
 }
 character_db = {
-    character_id[sql]: str,
-    character_name[sql]: str
+    character_id[sql]: "",
+    character_name[sql]: ""
 }
