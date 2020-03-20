@@ -13,58 +13,58 @@ class MysqlController:
         self.curs = self.conn.cursor()
 
     def insert_attribute(self, db_input):
-        sql = 'INSERT INTO attributeTbl VALUES (%s, %s, %s)'
-        self.curs.execute(sql,(db_input["attribute_id[sql]"], db_input["attribute_name[sql]"],
-                               db_input["attribute_explain[sql]"]))
+        query = 'INSERT INTO attributeTbl VALUES (%s, %s, %s)'
+        self.curs.execute(query, (db_input[attribute_id[sql]], db_input[attribute_name[sql]],
+                                  db_input[attribute_explain[sql]]))
         self.conn.commit()
 
     def insert_character(self, db_input):
-        sql = 'INSERT INTO characterTbl VALUES (%s, %s)'
-        self.curs.execute(sql, (db_input["character_id[sql]"], db_input["character_name[sql]"]))
+        query = 'INSERT INTO characterTbl VALUES (%s, %s)'
+        self.curs.execute(query, (db_input[character_id[sql]], db_input[character_name[sql]]))
         self.conn.commit()
 
     def insert_match(self, db_input):
-        sql = 'INSERT INTO matchTbl VALUES (%s, %s, %s, %s, %s)'
-        self.curs.execute(sql, (convert_datetime_to_str(db_input["date[sql]"]), db_input["match_id[sql]"],
-                                db_input["map_id[sql]"], db_input["map_name[sql]"], db_input["game_type_id[sql]"]))
+        query = 'INSERT INTO matchTbl VALUES (%s, %s, %s, %s, %s)'
+        self.curs.execute(query, (convert_datetime_to_str(db_input[date[sql]]), db_input[match_id[sql]],
+                                  db_input[map_id[sql]], db_input[map_name[sql]], db_input[game_type_id[sql]]))
         self.conn.commit()
 
     def insert_match_detail(self, db_input):
-        sql = 'INSERT INTO match_detailTbl VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, ' \
-              '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, )'
-        self.curs.execute(sql, (db_input["match_id[sql]"], db_input["player_id[sql]"], db_input["result[sql]"],
-                                db_input["random[sql]"], int(db_input["party_user_count[sql]"]),
-                                db_input["character_id[sql]"], int(db_input["level[sql]"]),
-                                int(db_input["kill_count[sql]"]), int(db_input["death_count[sql]"]),
-                                int(db_input["assist_count[sql]"]), int(db_input["attack_point[sql]"]),
-                                int(db_input["damage_point[sql]"]), int(db_input["battle_point[sql]"]),
-                                int(db_input["sight_point[sql]"]), int(db_input["play_time[sql]"]),
-                                db_input["position[sql]"], db_input["attribute[sql]"][0], db_input["attribute[sql]"][1],
-                                db_input["attribute[sql]"][2], db_input["items[sql]"][0], db_input["items[sql]"][1],
-                                db_input["items[sql]"][2], db_input["items[sql]"][3], db_input["items[sql]"][4],
-                                db_input["items[sql]"][5], db_input["items[sql]"][6], db_input["items[sql]"][7],
-                                db_input["items[sql]"][8], db_input["items[sql]"][9], db_input["items[sql]"][10],
-                                db_input["items[sql]"][11], db_input["items[sql]"][12], db_input["items[sql]"][13],
-                                db_input["items[sql]"][14], db_input["items[sql]"][15]))
+        query = 'INSERT INTO match_detailTbl VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, ' \
+                '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, )'
+        self.curs.execute(query, (db_input[match_id[sql]], db_input[player_id[sql]], db_input[result[sql]],
+                                  db_input[random[sql]], int(db_input[party_user_count[sql]]),
+                                  db_input[character_id[sql]], int(db_input[level[sql]]),
+                                  int(db_input[kill_count[sql]]), int(db_input[death_count[sql]]),
+                                  int(db_input[assist_count[sql]]), int(db_input[attack_point[sql]]),
+                                  int(db_input[damage_point[sql]]), int(db_input[battle_point[sql]]),
+                                  int(db_input[sight_point[sql]]), int(db_input[play_time[sql]]),
+                                  db_input[position[sql]], db_input[attribute[sql]][0], db_input[attribute[sql]][1],
+                                  db_input[attribute[sql]][2], db_input[items[sql]][0], db_input[items[sql]][1],
+                                  db_input[items[sql]][2], db_input[items[sql]][3], db_input[items[sql]][4],
+                                  db_input[items[sql]][5], db_input[items[sql]][6], db_input[items[sql]][7],
+                                  db_input[items[sql]][8], db_input[items[sql]][9], db_input[items[sql]][10],
+                                  db_input[items[sql]][11], db_input[items[sql]][12], db_input[items[sql]][13],
+                                  db_input[items[sql]][14], db_input[items[sql]][15]))
         self.conn.commit()
 
     def insert_position(self, db_input):
-        sql = 'INSERT INTO positionTbl VALUES (%s, %s)'
-        self.curs.execute(sql, (db_input["position_name[sql]"], db_input["position_explain[sql]"]))
+        query = 'INSERT INTO positionTbl VALUES (%s, %s)'
+        self.curs.execute(query, (db_input["position_name[sql]"], db_input["position_explain[sql]"]))
         self.conn.commit()
 
     def insert_user(self, db_input):
-        sql = 'INSERT INTO userTbl VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-        self.curs.execute(sql, (db_input["player_id[sql]"], db_input["nickname[sql]"], int(db_input["grade[sql]"]),
-                                db_input["clan_name[sql]"], int(db_input["rating_point[sql]"]),
-                                int(db_input["max_rating_point[sql]"]), db_input["tier_name[sql]"],
-                                int(db_input["rating_win[sql]"]), int(db_input["rating_lose[sql]"]),
-                                int(db_input["rating_stop[sql]"]), int(db_input["normal_win[sql]"]),
-                                int(db_input["normal_lose[sql]"]), int(db_input["normal_stop[sql]"])))
+        query = 'INSERT INTO userTbl VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+        self.curs.execute(query, (db_input[player_id[sql]], db_input[nickname[sql]], int(db_input[grade[sql]]),
+                                  db_input[clan_name[sql]], int(db_input[rating_point[sql]]),
+                                  int(db_input[max_rating_point[sql]]), db_input[tier_name[sql]],
+                                  int(db_input[rating_win[sql]]), int(db_input[rating_lose[sql]]),
+                                  int(db_input[rating_stop[sql]]), int(db_input[normal_win[sql]]),
+                                  int(db_input[normal_lose[sql]]), int(db_input[normal_stop[sql]])))
         self.conn.commit()
 
     def test_create(self):
-        sql = '''
+        query = '''
                 CREATE TABLE USERS 
                 (
                       USER_ID     VARCHAR(50)    NOT NULL PRIMARY KEY,
@@ -79,14 +79,14 @@ class MysqlController:
                       CHG_TM     TIMESTAMP   COMMENT '변경일시'
                  )ENGINE=InnoDB DEFAULT CHARSET=utf8
               '''
-        self.curs.execute(sql)
+        self.curs.execute(query)
         self.conn.commit()
 
     def test_insert(self):
-        sql = '''
+        query = '''
                    INSERT INTO TESTS VALUES (%s, %s)
                    '''
-        self.curs.execute(sql, ("19910114144400", 142))
+        self.curs.execute(query, ("19910114144400", 142))
         self.conn.commit()
 
     def disconnect_db(self):
@@ -94,19 +94,19 @@ class MysqlController:
 
 
 testUser = {
-    "player_id[sql]": "9ff6b86fcb477249ea6ef8ab57ec4795",
-    "nickname[sql]": "아얌",
-    "grade[sql]": "51",
-    "clan_name[sql]": "마음속하유안",
-    "rating_point[sql]": "1302",
-    "max_rating_point[sql]":"1302",
-    "tier_name[sql]": "히어로",
-    "rating_win[sql]": "5801",
-    "rating_lose[sql]": "12",
-    "rating_stop[sql]": "0",
-    "normal_win[sql]": "22",
-    "normal_lose[sql]": "1",
-    "normal_stop[sql]": "0"
+    player_id[sql]: "9ff6b86fcb477249ea6ef8ab57ec4795",
+    nickname[sql]: "아얌",
+    grade[sql]: 51,
+    clan_name[sql]: "마음속하유안",
+    rating_point[sql]: 1302,
+    max_rating_point[sql]: 1302,
+    tier_name[sql]: "히어로",
+    rating_win[sql]: 5801,
+    rating_lose[sql]: 12,
+    rating_stop[sql]: 0,
+    normal_win[sql]: 22,
+    normal_lose[sql]: 1,
+    normal_stop[sql]: 0
 }
 
 testSQL = MysqlController('localhost', 'root', 'vmfhwprxm2@', 'modeldb')
