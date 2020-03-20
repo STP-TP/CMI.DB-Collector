@@ -55,7 +55,7 @@ class CollectDbFlow:
             body = self.response_code(self.__com.lookup_player_info(temp_player_id))
             if body is None:
                 continue
-            user_db.append(body)
+            local_user_db.append(self.parser.player_info(body))
             body = self.response_code(
                 self.__com.lookup_player_match(temp_player_id, game_type, 100, day_start, day_end))
             player_dict[temp_player_id] = True
@@ -133,9 +133,8 @@ class CollectDbFlow:
         temp_day_start = datetime.datetime.now() - datetime.timedelta(days)
 
         user_list = self.collect_rating_ranker_id(rank_min, rank_max)
-        [local_user_db, local_match_db, local_match_detail_db] = self.collect_game_information(user_list,
-                                                                                               temp_day_start,
-                                                                                               temp_day_end, rating)
+        [local_user_db, local_match_db, local_match_detail_db] = \
+            self.collect_game_information(user_list, temp_day_start, temp_day_end, rating)
 
         if self.__db_collect_mode:
             self.save_play_info_to_pickle(local_user_db, local_match_db, local_match_detail_db)
@@ -146,26 +145,24 @@ class CollectDbFlow:
         temp_day_start = datetime.datetime.now() - datetime.timedelta(days)
 
         user_list = self.collect_normal_ranker_id(rank_min, rank_max)
-        [local_user_db, local_match_db, local_match_detail_db] = self.collect_game_information(user_list,
-                                                                                               temp_day_start,
-                                                                                               temp_day_end, rating)
+        [local_user_db, local_match_db, local_match_detail_db] = \
+            self.collect_game_information(user_list, temp_day_start, temp_day_end, normal)
 
         if self.__db_collect_mode:
             self.save_play_info_to_pickle(local_user_db, local_match_db, local_match_detail_db)
             print("DB Save End")
 
-    def trigger_nickname(self, param_nickname, game_type=rating, days=7):
+    def trigger_nickname(self, param_nickname, param_game_type=rating, days=7):
         temp_day_end = datetime.datetime.now()
         temp_day_start = datetime.datetime.now() - datetime.timedelta(days)
 
-        body = self.response_code(self.__com.lookup_nickname(nickname))
+        body = self.response_code(self.__com.lookup_nickname(param_nickname))
         if body is None:
             return
         user_list = self.parser.player_search(body)
 
-        [local_user_db, local_match_db, local_match_detail_db] = self.collect_game_information(user_list,
-                                                                                               temp_day_start,
-                                                                                               temp_day_end, rating)
+        [local_user_db, local_match_db, local_match_detail_db] = \
+            self.collect_game_information(user_list, temp_day_start, temp_day_end, param_game_type)
 
         if self.__db_collect_mode:
             self.save_play_info_to_pickle(local_user_db, local_match_db, local_match_detail_db)

@@ -8,8 +8,8 @@ import datetime
 import copy
 
 
-def convert_str_to_datetime(date: str):
-    return datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
+def convert_str_to_datetime(param_date: str):
+    return datetime.datetime.strptime(param_date, "%Y-%m-%d %H:%M")
 
 
 class ApiParser:
@@ -22,7 +22,6 @@ class ApiParser:
     __item = GameItems()
     __character = GameCharacters()
     __attribute = GameAttribute()
-    __map = GameMaps()
 
     __api_number = {
         1: "플레이어 검색",
@@ -48,13 +47,17 @@ class ApiParser:
         temp_user_db = copy.deepcopy(user_db)
         for key, val in body.items():
             if key == "records":
-                temp_user_db[rating_win[sql]] = val[0][win_count[api]]
-                temp_user_db[rating_lose[sql]] = val[0][lose_count[api]]
-                temp_user_db[rating_stop[sql]] = val[0][stop_count[api]]
-                temp_user_db[normal_win[sql]] = val[1][win_count[api]]
-                temp_user_db[normal_lose[sql]] = val[0][lose_count[api]]
-                temp_user_db[normal_stop[sql]] = val[0][stop_count[api]]
-            temp_user_db[key] = val
+                for game_record in val:
+                    if game_record[game_type_id[api]] == rating:
+                        temp_user_db[rating_win[sql]] = game_record[win_count[api]]
+                        temp_user_db[rating_lose[sql]] = game_record[lose_count[api]]
+                        temp_user_db[rating_stop[sql]] = game_record[stop_count[api]]
+                    elif game_record[game_type_id[api]] == normal:
+                        temp_user_db[normal_win[sql]] = game_record[win_count[api]]
+                        temp_user_db[normal_lose[sql]] = game_record[lose_count[api]]
+                        temp_user_db[normal_stop[sql]] = game_record[stop_count[api]]
+            else:
+                temp_user_db[key] = val
         return temp_user_db
 
     @staticmethod
@@ -72,16 +75,16 @@ class ApiParser:
             local_match_db[game_type_id[sql]] = normal
         elif body[game_type_id[api]] == rating:
             local_match_db[game_type_id[sql]] = rating
-        local_match_db[match_id[sql]] = match_id
+        local_match_db[match_id[sql]] = param_match_id
         local_match_db[date[sql]] = convert_str_to_datetime(body[date[api]])
         local_match_db[game_type_id[sql]] = body[game_type_id[api]]
         local_player_list = []
         for team in body["teams"]:
             for user in team[players[api]]:
                 local_player_list.append(user)
-        match_db[players[sql]] = local_player_list
-        match_db[map_id[sql]] = body[players[api]][0]["map"][map_id[api]]
-        match_db[map_name[sql]] = body[players[api]][0]["map"][map_name[api]]
+        local_match_db[players[sql]] = local_player_list
+        local_match_db[map_id[sql]] = body[players[api]][0]["map"][map_id[api]]
+        local_match_db[map_name[sql]] = body[players[api]][0]["map"][map_name[api]]
 
         local_match_detail_db = []
         for inx, user in enumerate(body[players[api]]):
