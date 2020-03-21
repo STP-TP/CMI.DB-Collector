@@ -56,6 +56,13 @@ class ApiParser:
                         temp_user_db[normal_win[sql]] = game_record[win_count[api]]
                         temp_user_db[normal_lose[sql]] = game_record[lose_count[api]]
                         temp_user_db[normal_stop[sql]] = game_record[stop_count[api]]
+            elif (key == tier_name[api]) and (val is None):
+                temp_user_db[tier_name[sql]] = "Unranked"
+            elif val is None:
+                if type(temp_user_db[key]) is int:
+                    temp_user_db[key] = 0
+                elif type(temp_user_db[key]) is str:
+                    temp_user_db[key] = ""
             else:
                 temp_user_db[key] = val
         return temp_user_db
