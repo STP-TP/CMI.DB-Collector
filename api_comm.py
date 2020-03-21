@@ -6,7 +6,8 @@ from urllib.parse import quote
 
 
 class CommToApiServer:
-    _apiKey = "apikey=0rYk7DYbNFelyQguZRmwhWxF1QhZ0yJP"
+    #_apiKey = "apikey=0rYk7DYbNFelyQguZRmwhWxF1QhZ0yJP"
+    _apiKey = "apikey=CC8jyCKceCSBkkDhc9eVj1G2qsNqVBSN"
     _apiURL = "https://api.neople.co.kr/cy/"
     _apiWordType = "wordType=full"
     _matchNextEnable = False
