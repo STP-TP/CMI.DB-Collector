@@ -90,12 +90,14 @@ class CollectDbFlow:
             self.__sql.insert_match_detail(save_target)
 
     def save_play_info_to_pickle(self, param_user_db, param_match_db, param_match_detail_db):
+        '''
         self.db_user.update_new_db_list(param_user_db)
         self.db_user.save_db()
         self.db_match_rating.update_new_db_list(param_match_db)
         self.db_match_rating.save_db()
         self.db_match_detail.update_new_db_list(param_match_detail_db)
         self.db_match_detail.save_db()
+        '''
 
     def load_play_info_from_pickle(self):
         self.db_user.load_db()
