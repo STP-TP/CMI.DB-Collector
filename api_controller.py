@@ -82,24 +82,20 @@ class CollectDbFlow:
         return local_user_db, local_match_db, local_match_detail_db
 
     def save_play_info_to_sql(self, param_user_db, param_match_db, param_match_detail_db):
-        """for save_target in param_user_db:
+        for save_target in param_user_db:
             self.__sql.insert_user(save_target)
         for save_target in param_match_db:
-            self.__sql.insert_match(save_target)"""
+            self.__sql.insert_match(save_target)
         for save_target in param_match_detail_db:
-            if len(save_target[items[sql]]) != 16:
-                pass
             self.__sql.insert_match_detail(save_target)
 
     def save_play_info_to_pickle(self, param_user_db, param_match_db, param_match_detail_db):
-        '''
         self.db_user.update_new_db_list(param_user_db)
         self.db_user.save_db()
         self.db_match_rating.update_new_db_list(param_match_db)
         self.db_match_rating.save_db()
         self.db_match_detail.update_new_db_list(param_match_detail_db)
         self.db_match_detail.save_db()
-        '''
 
     def load_play_info_from_pickle(self):
         self.db_user.load_db()
@@ -157,7 +153,7 @@ class CollectDbFlow:
 
         if self.__db_collect_mode:
             self.save_play_info_to_pickle(local_user_db, local_match_db, local_match_detail_db)
-            # self.save_play_info_to_sql(local_user_db, local_match_db, local_match_detail_db)
+            self.save_play_info_to_sql(local_user_db, local_match_db, local_match_detail_db)
             print("DB Save End")
 
     def trigger_normal_based(self, rank_min, rank_max, days):
