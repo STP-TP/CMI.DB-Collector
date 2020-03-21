@@ -113,9 +113,9 @@ class ApiParser:
             for attributes in pos[attribute[api]]:
                 temp_attribute_list.append(attributes[attribute_id[api]])
             temp_match_detail_db[attribute[sql]] = temp_attribute_list
-            item_temp_dict = {}
+            item_temp_dict = copy.deepcopy(item_slot)
             for item in user[items[api]]:
-                item_temp_dict[item[slot_code[sql]]] = item[item_id[api]]
+                item_temp_dict[int(item[equip_slot_code[sql]])] = item[item_id[api]]
             temp_item_list = list(sorted(item_temp_dict.items()))
             temp_match_detail_db[items[sql]] = temp_item_list
             local_match_detail_db.append(temp_match_detail_db)

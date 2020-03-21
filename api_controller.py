@@ -82,11 +82,13 @@ class CollectDbFlow:
         return local_user_db, local_match_db, local_match_detail_db
 
     def save_play_info_to_sql(self, param_user_db, param_match_db, param_match_detail_db):
-        for save_target in param_user_db:
+        """for save_target in param_user_db:
             self.__sql.insert_user(save_target)
         for save_target in param_match_db:
-            self.__sql.insert_match(save_target)
+            self.__sql.insert_match(save_target)"""
         for save_target in param_match_detail_db:
+            if len(save_target[items[sql]]) != 16:
+                pass
             self.__sql.insert_match_detail(save_target)
 
     def save_play_info_to_pickle(self, param_user_db, param_match_db, param_match_detail_db):
@@ -195,8 +197,8 @@ a.collect_items()
 a.collect_character_db()"""
 a.set_collect_mode(True)
 
-# a. trigger_rating_based(0, 20, 1)
+a. trigger_rating_based(0, 20, 1)
 # a.trigger_normal_based(0, 5, 1)
 # a.trigger_nickname("Papico", "normal")
-a.load_play_info_from_pickle()
-a.save_play_info_to_sql(a.db_user.get_db(), a.db_match_rating.get_db(), a.db_match_detail.get_db())
+# a.load_play_info_from_pickle()
+# a.save_play_info_to_sql(a.db_user.get_db(), a.db_match_rating.get_db(), a.db_match_detail.get_db())
