@@ -63,54 +63,7 @@ class MysqlController:
                                   int(db_input[normal_lose[sql]]), int(db_input[normal_stop[sql]])))
         self.conn.commit()
 
-    def test_create(self):
-        query = '''
-                CREATE TABLE USERS 
-                (
-                      USER_ID     VARCHAR(50)    NOT NULL PRIMARY KEY,
-                      USER_NM     VARCHAR(200)    NOT NULL COMMENT '사용자명',
-                      TEL_NO     VARCHAR(50)   COMMENT '전화번호',
-                      EMAIL     VARCHAR(100)   COMMENT '이메일',
-                      COMPNY_NM     VARCHAR(200)  COMMENT '회사명',
-                      DEPT_NM     VARCHAR(200)   COMMENT '부서명',
-                      JDEG_NM     VARCHAR(200)    COMMENT '직급명',
-                      WORKING_SITE_NM   VARCHAR(200)  COMMENT '근무지역명',
-                      REG_TM     TIMESTAMP   COMMENT '등록일시',
-                      CHG_TM     TIMESTAMP   COMMENT '변경일시'
-                 )ENGINE=InnoDB DEFAULT CHARSET=utf8
-              '''
-        self.curs.execute(query)
-        self.conn.commit()
-
-    def test_insert(self):
-        query = '''
-                   INSERT INTO TESTS VALUES (%s, %s)
-                   '''
-        self.curs.execute(query, ("19910114144400", 142))
-        self.conn.commit()
-
     def disconnect_db(self):
         self.conn.close()
 
-
-testUser = {
-    player_id[sql]: "9ff6b86fcb477249ea6ef8ab57ec4795",
-    nickname[sql]: "아얌",
-    grade[sql]: 51,
-    clan_name[sql]: "마음속하유안",
-    rating_point[sql]: 1302,
-    max_rating_point[sql]: 1302,
-    tier_name[sql]: "히어로",
-    rating_win[sql]: 5801,
-    rating_lose[sql]: 12,
-    rating_stop[sql]: 0,
-    normal_win[sql]: 22,
-    normal_lose[sql]: 1,
-    normal_stop[sql]: 0
-}
-
-testSQL = MysqlController('localhost', 'root', 'vmfhwprxm2@', 'modeldb')
-#testSQL.insertAttribute('testID','testAtt','testAttexp','탱커')
-#testSQL.test_query()
-testSQL.insert_user(testUser)
-testSQL.disconnect_db()
+#testSQL = MysqlController('localhost', 'root', 'vmfhwprxm2@', 'modeldb')
