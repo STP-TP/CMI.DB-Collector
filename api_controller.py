@@ -152,7 +152,7 @@ class CollectDbFlow:
             self.collect_game_information(user_list, temp_day_start, temp_day_end, rating)
 
         if self.__db_collect_mode:
-            self.save_play_info_to_pickle(local_user_db, local_match_db, local_match_detail_db)
+            # self.save_play_info_to_pickle(local_user_db, local_match_db, local_match_detail_db)
             self.save_play_info_to_sql(local_user_db, local_match_db, local_match_detail_db)
             print("DB Save End")
 
@@ -165,7 +165,7 @@ class CollectDbFlow:
             self.collect_game_information(user_list, temp_day_start, temp_day_end, normal)
 
         if self.__db_collect_mode:
-            self.save_play_info_to_pickle(local_user_db, local_match_db, local_match_detail_db)
+            # self.save_play_info_to_pickle(local_user_db, local_match_db, local_match_detail_db)
             self.save_play_info_to_sql(local_user_db, local_match_db, local_match_detail_db)
             print("DB Save End")
 
@@ -182,7 +182,7 @@ class CollectDbFlow:
             self.collect_game_information(user_list, temp_day_start, temp_day_end, param_game_type)
 
         if self.__db_collect_mode:
-            self.save_play_info_to_pickle(local_user_db, local_match_db, local_match_detail_db)
+            # self.save_play_info_to_pickle(local_user_db, local_match_db, local_match_detail_db)
             self.save_play_info_to_sql(local_user_db, local_match_db, local_match_detail_db)
             print("DB Save End")
 
@@ -194,7 +194,7 @@ a.collect_character_db()"""
 a.set_collect_mode(True)
 
 a. trigger_rating_based(0, 20, 1)
-# a.trigger_normal_based(0, 5, 1)
+# a.trigger_normal_based(0, 10, 1)
 # a.trigger_nickname("Papico", "normal")
 # a.load_play_info_from_pickle()
 # a.save_play_info_to_sql(a.db_user.get_db(), a.db_match_rating.get_db(), a.db_match_detail.get_db())

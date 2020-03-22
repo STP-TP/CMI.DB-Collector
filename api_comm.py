@@ -3,11 +3,11 @@ import time
 import urllib.request as socket
 import urllib.error as urlerr
 from urllib.parse import quote
+from DB_class.user_param.param_private import *
 
 
 class CommToApiServer:
-    #_apiKey = "apikey=0rYk7DYbNFelyQguZRmwhWxF1QhZ0yJP"
-    _apiKey = "apikey=CC8jyCKceCSBkkDhc9eVj1G2qsNqVBSN"
+    _apiKey = apiKey_jss
     _apiURL = "https://api.neople.co.kr/cy/"
     _apiWordType = "wordType=full"
     _matchNextEnable = False
@@ -54,7 +54,7 @@ class CommToApiServer:
         # 횟수 제한 확인
         self._api_communication_count()
         err_return = {}
-        for i in range(5):
+        for i in range(10):
             try:
                 response = socket.urlopen(request_url)
                 res_code = response.getcode()
@@ -66,14 +66,14 @@ class CommToApiServer:
                               "body": ""}
                 print("HTTP Error !!")
                 print(err.reason)
-                print("(", i, "/", 5, ")retry...")
+                print("(", i+1, "/", 5, ")retry...")
                 time.sleep(0.5)
             except urlerr.URLError as err:
                 err_return = {"explain": err.reason,
                               "body": ""}
                 print("URL Error !!")
                 print(err.reason)
-                print("(", i, "/", 5, ")retry...")
+                print("(", i+1, "/", 5, ")retry...")
                 time.sleep(0.5)
         return err_return
 
