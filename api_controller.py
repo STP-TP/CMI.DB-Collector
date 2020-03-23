@@ -187,10 +187,10 @@ class CollectDbFlow:
             print("DB Save End")
 
 
-a = CollectDbFlow()
-"""a.set_collect_mode(True)
+"""a = CollectDbFlow()
+a.set_collect_mode(True)
 a.collect_items()
-a.collect_character_db()"""
+a.collect_character_db()
 a.set_collect_mode(True)
 
 a. trigger_rating_based(0, 20, 1)
@@ -198,3 +198,4 @@ a. trigger_rating_based(0, 20, 1)
 # a.trigger_nickname("Papico", "normal")
 # a.load_play_info_from_pickle()
 # a.save_play_info_to_sql(a.db_user.get_db(), a.db_match_rating.get_db(), a.db_match_detail.get_db())
+"""
