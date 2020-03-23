@@ -62,7 +62,13 @@ class CollectDbFlow:
             player_dict[temp_player_id] = True
             if body is None:
                 continue
-            match_list = match_list + self.parser.player_matching_record(body)
+            res = self.parser.player_matching_record(body)
+            match_list = match_list + res[0]
+            while res[1]:
+                body = self.response_code(self.__com.lookup_player_match_next(temp_player_id, res[1]))
+                res = self.parser.player_matching_record(body)
+                match_list = match_list + res[0]
+
             while True:
                 if len(match_list) <= loop_match_count:
                     break
@@ -109,6 +115,10 @@ class CollectDbFlow:
         if body is None:
             return
         local_character_db = self.parser.character_info(body)
+        if save_on_off:
+            for char in local_character_db:
+                self.__sql.insert_character(char)
+            print("DB saved complete")
         return local_character_db
 
     def collect_items(self):

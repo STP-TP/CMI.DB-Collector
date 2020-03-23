@@ -10,7 +10,6 @@ class CommToApiServer:
     _apiKey = apiKey_jss
     _apiURL = "https://api.neople.co.kr/cy/"
     _apiWordType = "wordType=full"
-    _matchNextEnable = False
     _innerErrCode = 0
     __api_start_time = []
 
@@ -114,12 +113,6 @@ class CommToApiServer:
     def _check_type(self, type_param):
         return self.__check_str_blank(type_param) & self.__check_str_type(type_param)
 
-    def _check_enabled(self, bool_param):
-        if bool_param is False:
-            self._innerErrCode = 1902
-            return False
-        return True
-
     def lookup_nickname(self, nickname, limit=1):
         ret = self._check_name(nickname) & self._check_int_value(limit)
         if ret is not True:
@@ -152,12 +145,12 @@ class CommToApiServer:
         # print(request_url)
         return self._get_api_body(request_url)
 
-    def lookup_player_match_next(self, player_id):
-        ret = self._check_id(player_id) & self._check_enabled(self._matchNextEnable)
+    def lookup_player_match_next(self, player_id, next_code):
+        ret = self._check_id(player_id) & self.__check_str_blank(next_code)
         if ret is not True:
             return self._get_response_code(self._innerErrCode)
 
-        request_url = self._apiURL + "players/" + player_id + "/matches?next=<next>&" + self._apiKey
+        request_url = self._apiURL + "players/" + player_id + "/matches?next=" + next_code + "&" + self._apiKey
         return self._get_api_body(request_url)
 
     def lookup_match_info(self, match_id):

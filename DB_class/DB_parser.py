@@ -73,7 +73,7 @@ class ApiParser:
         temp_match_list = []
         for match in matches["rows"]:
             temp_match_list.append(match[match_id[api]])
-        return temp_match_list
+        return [temp_match_list, matches["next"]]
 
     @staticmethod
     def match_detail_info(param_match_id, body):
