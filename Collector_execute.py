@@ -61,6 +61,7 @@ def select_menu(menu: dict):
             elif func_num is 22:
                 # collect newest database
                 pass
+            print(api_ctrl.get_api_com_error_list(True))
 
 
 select_menu(main_menu)

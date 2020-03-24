@@ -1,9 +1,11 @@
 import api_comm as comm
+import json
 import DB_class.DB_other as otherDb
 import DB_class.DB_user as userDb
 import DB_class.DB_match as matchDb
 import DB_class.DB_match_detail as matchDetailDb
 from DB_class.user_param.param_db import *
+import DB_class.user_param.param_path as path_define
 from DB_class.DB_parser import *
 from DB_class.DB_config import *
 from DB_class.user_param.param_private import *
@@ -22,6 +24,15 @@ class CollectDbFlow:
 
     def __init__(self):
         self.__com = comm.CommToApiServer()
+
+    def get_api_com_error_list(self, save_enabled=False):
+        err_list = self.__com.get_api_error_list()
+        if save_enabled:
+            # error save code
+            with open(path_define.log_path + path_define.api_log, 'w') as outfile:
+                json.dump(err_list, outfile)
+            pass
+        return err_list
 
     def set_collect_mode(self, mode):
         self.__db_collect_mode = mode
@@ -110,7 +121,7 @@ class CollectDbFlow:
         self.db_match_detail.load_db()
 
     def collect_character_db(self, save_on_off=False):
-        """ return: character db list """
+        """return: character db list """
         body = self.response_code(self.__com.get_character_info())
         if body is None:
             return
@@ -195,17 +206,3 @@ class CollectDbFlow:
             # self.save_play_info_to_pickle(local_user_db, local_match_db, local_match_detail_db)
             self.save_play_info_to_sql(local_user_db, local_match_db, local_match_detail_db)
             print("DB Save End")
-
-
-"""a = CollectDbFlow()
-a.set_collect_mode(True)
-a.collect_items()
-a.collect_character_db()
-a.set_collect_mode(True)
-
-a. trigger_rating_based(0, 20, 1)
-# a.trigger_normal_based(0, 10, 1)
-# a.trigger_nickname("Papico", "normal")
-# a.load_play_info_from_pickle()
-# a.save_play_info_to_sql(a.db_user.get_db(), a.db_match_rating.get_db(), a.db_match_detail.get_db())
-"""

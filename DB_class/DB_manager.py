@@ -1,5 +1,6 @@
 import abc
 import pickle
+import os
 import DB_class.user_param.param_path as path_define
 from DB_class.user_param.param_db import *
 
@@ -12,6 +13,7 @@ class DbManager(metaclass=abc.ABCMeta):
 
     def __init__(self, option=rating):
         self.init_path(option)
+        self.create_folder()
         if self.__db_init is False:
             self.load_db()
             self.__db_init = True
@@ -23,6 +25,14 @@ class DbManager(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def init_path(self, option):  # db table setting
         pass
+
+    @staticmethod
+    def create_folder():
+        try:
+            if not os.path.exists(path_define.database_path):
+                os.makedirs(path_define.database_path)
+        except OSError:
+            print("Error: Creating folder. " + path_define.database_path)
 
     def update_new_db_list(self, db_list: list):
         for db in db_list:
