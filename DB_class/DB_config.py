@@ -9,9 +9,13 @@ def convert_datetime_to_str(date_input):
 
 class MysqlController:
     def __init__(self, param_host, param_id, param_pw, param_db_name):
-        MysqlController.conn = pymysql.connect(host=param_host, user=param_id, password=param_pw, db=param_db_name,
-                                               charset='utf8')
+        self.conn = pymysql.connect(host=param_host, user=param_id, password=param_pw, db=param_db_name, charset='utf8')
         self.curs = self.conn.cursor()
+
+    def __del__(self):
+        self.conn.close()
+
+    '''========================INSERT========================'''
 
     def insert_attribute(self, db_input):
         query = '''
@@ -95,7 +99,20 @@ class MysqlController:
                                   int(db_input[normal_lose[sql]]), int(db_input[normal_stop[sql]])))
         self.conn.commit()
 
+    '''========================SELECT========================'''
+
+    def select_by_rating(self, str_input):
+        player_id_list = []
+        query = """SELECT playerID FROM userTbl WHERE tierName LIKE '""" + str_input + '''%' ;'''
+        self.curs.execute(query)
+        rows = self.curs.fetchall()
+        for row in rows:
+            player_id_list.append(row[0])
+
+        print(player_id_list)
+        return player_id_list
+
     def disconnect_db(self):
         self.conn.close()
 
-#testSQL = MysqlController('localhost', 'root', 'vmfhwprxm2@', 'modeldb')
+# testSQL = MysqlController('localhost', 'root', 'vmfhwprxm2@', 'modeldb')
