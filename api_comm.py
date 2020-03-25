@@ -10,9 +10,9 @@ class CommToApiServer:
     _apiKey = apiKey_jss
     _apiURL = "https://api.neople.co.kr/cy/"
     _apiWordType = "wordType=full"
-    _matchNextEnable = False
     _innerErrCode = 0
     __api_start_time = []
+    _api_error_list = []
 
     _itemList = {
         0: "characterId",
@@ -32,8 +32,8 @@ class CommToApiServer:
         1092: "초기값 없는 Next 명령 기입"
     }
 
-    def __init__(self, api_key="0rYk7DYbNFelyQguZRmwhWxF1QhZ0yJP"):
-        self.apiKey = "apikey=" + api_key
+    def __init__(self):
+        pass
 
     @staticmethod
     def _api_communication_count():
@@ -75,7 +75,16 @@ class CommToApiServer:
                 print(err.reason)
                 print("(", i+1, "/", 5, ")retry...")
                 time.sleep(0.5)
+        err_log_dict = err_return.copy()
+        err_log_dict["url"] = request_url
+        self._api_error_list.append(err_log_dict)
         return err_return
+
+    def get_api_error_list(self):
+        return self._api_error_list.copy()
+
+    def del_api_error_list(self):
+        self._api_error_list = []
 
     def _get_response_code(self, code, response_body=""):
         api_return = {"code": code,
@@ -114,12 +123,6 @@ class CommToApiServer:
     def _check_type(self, type_param):
         return self.__check_str_blank(type_param) & self.__check_str_type(type_param)
 
-    def _check_enabled(self, bool_param):
-        if bool_param is False:
-            self._innerErrCode = 1902
-            return False
-        return True
-
     def lookup_nickname(self, nickname, limit=1):
         ret = self._check_name(nickname) & self._check_int_value(limit)
         if ret is not True:
@@ -127,7 +130,7 @@ class CommToApiServer:
 
         nickname_url = quote(nickname)
         request_url = self._apiURL + "players?nickname=" + nickname_url + "&" + self._apiWordType + "&limit=" \
-                      + str(limit) + "&" + self.apiKey
+                      + str(limit) + "&" + self._apiKey
         return self._get_api_body(request_url)
 
     def lookup_player_info(self, player_id):
@@ -135,7 +138,7 @@ class CommToApiServer:
         if ret is not True:
             return self._get_response_code(self._innerErrCode)
 
-        request_url = self._apiURL + "players/" + player_id + "?" + self.apiKey
+        request_url = self._apiURL + "players/" + player_id + "?" + self._apiKey
         return self._get_api_body(request_url)
 
     def lookup_player_match(self, player_id, game_type="rating", limit=100, start_date=None, end_date=None):
@@ -148,16 +151,16 @@ class CommToApiServer:
             startDate = start_date.strftime("%Y%m%dT0000")
             endDate = end_date.strftime("%Y%m%dT0000")
             request_url = request_url + "&startDate=" + startDate + "&endDate=" + endDate
-        request_url = request_url + "&limit=" + str(limit) + "&" + self.apiKey
+        request_url = request_url + "&limit=" + str(limit) + "&" + self._apiKey
         # print(request_url)
         return self._get_api_body(request_url)
 
-    def lookup_player_match_next(self, player_id):
-        ret = self._check_id(player_id) & self._check_enabled(self._matchNextEnable)
+    def lookup_player_match_next(self, player_id, next_code):
+        ret = self._check_id(player_id) & self.__check_str_blank(next_code)
         if ret is not True:
             return self._get_response_code(self._innerErrCode)
 
-        request_url = self._apiURL + "players/" + player_id + "/matches?next=<next>&" + self._apiKey
+        request_url = self._apiURL + "players/" + player_id + "/matches?next=" + next_code + "&" + self._apiKey
         return self._get_api_body(request_url)
 
     def lookup_match_info(self, match_id):
