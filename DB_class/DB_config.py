@@ -108,8 +108,6 @@ class MysqlController:
         rows = self.curs.fetchall()
         for row in rows:
             player_id_list.append(row[0])
-
-        print(player_id_list)
         return player_id_list
 
     def disconnect_db(self):
