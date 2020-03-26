@@ -123,12 +123,13 @@ class MysqlController:
 
     def select_attribute_id(self):
         attribute_id_list = []
-        query = """SELECT DISTINCT attributeID FROM match_detailTbl;"""
-        self.curs.execute(query)
-        res = self.curs.fetchall()
-        for row in res:
-            attribute_id_list.append(row[0])
-        return attribute_id_list
+        for k in ('lv1', 'lv2', 'lv3'):
+            query = """SELECT DISTINCT attributeID_""" + k + """ FROM match_detailTbl;"""
+            self.curs.execute(query)
+            res = self.curs.fetchall()
+            for row in res:
+                attribute_id_list.append(row[0])
+        return list(set(attribute_id_list))
 
     def disconnect_db(self):
         self.conn.close()
