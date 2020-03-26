@@ -19,7 +19,7 @@ class MysqlController:
 
     def insert_attribute(self, db_input):
         query = '''
-        INSERT IGNORE INTO attributeTbl (attributeID, attributeName, attributeExplain) VALUES (%s, %s, %s)
+        INSERT IGNORE INTO attributeTbl (attributeID, attributeName, attributeExplain) VALUES (%s, %s, %s);
         '''
         self.curs.execute(query, (db_input[attribute_id[sql]], db_input[attribute_name[sql]],
                                   db_input[attribute_explain[sql]]))
@@ -27,7 +27,7 @@ class MysqlController:
 
     def insert_character(self, db_input):
         query = '''
-        INSERT IGNORE INTO characterTbl (characterID, characterName) VALUES (%s, %s)
+        INSERT IGNORE INTO characterTbl (characterID, characterName) VALUES (%s, %s);
         '''
         self.curs.execute(query, (db_input[character_id[sql]], db_input[character_name[sql]]))
         self.conn.commit()
@@ -36,7 +36,7 @@ class MysqlController:
         query = '''
         INSERT IGNORE INTO itemTbl (itemID, itemName, slotCode, slotName, rarityCode, rarityName, equipSlotCode,
          equipSlotName)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)   
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);   
         '''
         self.curs.execute(query, (db_input[item_id[sql]], db_input[item_name[sql]], int(db_input[slot_code[sql]]),
                                   db_input[slot_name[sql]], int(db_input[rarity_code[sql]]), db_input[rarity_name[sql]],
@@ -45,7 +45,7 @@ class MysqlController:
 
     def insert_match(self, db_input):
         query = '''
-        INSERT IGNORE INTO matchTbl (date, matchID, mapID, mapName, gametypeID) VALUES (%s, %s, %s, %s, %s)
+        INSERT IGNORE INTO matchTbl (date, matchID, mapID, mapName, gametypeID) VALUES (%s, %s, %s, %s, %s);
         '''
         self.curs.execute(query, (convert_datetime_to_str(db_input[date[sql]]), db_input[match_id[sql]],
                                   db_input[map_id[sql]], db_input[map_name[sql]], db_input[game_type_id[sql]]))
@@ -57,7 +57,7 @@ class MysqlController:
          positionName, attributeID_lv1, attributeID_lv2, attributeID_lv3, item_101, item_102, item_103, item_104,
          item_105, item_106, item_107, item_202, item_203, item_204, item_205, item_301, item_302, item_303, item_304,
          item_305) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         '''
         self.curs.execute(query, (db_input[match_id[sql]], db_input[player_id[sql]], db_input[result[sql]],
                                   db_input[random[sql]], int(db_input[party_user_count[sql]]),
@@ -76,7 +76,7 @@ class MysqlController:
         self.conn.commit()
 
     def insert_position(self, db_input):
-        query = '''INSERT IGNORE INTO positionTbl (positionName, positionExplain) VALUES (%s, %s)
+        query = '''INSERT IGNORE INTO positionTbl (positionName, positionExplain) VALUES (%s, %s);
         '''
         self.curs.execute(query, (db_input["position_name[sql]"], db_input["position_explain[sql]"]))
         self.conn.commit()
@@ -105,12 +105,29 @@ class MysqlController:
         player_id_list = []
         query = """SELECT playerID FROM userTbl WHERE tierName LIKE '""" + str_input + '''%' ;'''
         self.curs.execute(query)
-        rows = self.curs.fetchall()
-        for row in rows:
+        res = self.curs.fetchall()
+        for row in res:
             player_id_list.append(row[0])
         return player_id_list
+
+    def select_item_id(self):
+        item_id_list = []
+        query = """SELECT DISTINCT itemID from itemTbl;"""
+        self.curs.execute(query)
+        res = self.curs.fetchall()
+        for row in res:
+            item_id_list.append(row[0])
+        return item_id_list
+
+    def select_attribute_id(self):
+        attribute_id_list = []
+        query = """SELECT DISTINCT attributeID from attributeTbl;"""
+        self.curs.execute(query)
+        res = self.curs.fetchall()
+        for row in res:
+            attribute_id_list.append(row[0])
+        return attribute_id_list
 
     def disconnect_db(self):
         self.conn.close()
 
-# testSQL = MysqlController('localhost', 'root', 'vmfhwprxm2@', 'modeldb')
