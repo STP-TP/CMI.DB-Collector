@@ -112,16 +112,18 @@ class MysqlController:
 
     def select_item_id(self):
         item_id_list = []
-        query = """SELECT DISTINCT itemID from itemTbl;"""
-        self.curs.execute(query)
-        res = self.curs.fetchall()
-        for row in res:
-            item_id_list.append(row[0])
-        return item_id_list
+        for k in item_slot.keys():
+            query = """SELECT DISTINCT item_""" + str(k) + """ FROM match_detailTbl WHERE NOT item_""" + str(k) +\
+                    """ = ' ';"""
+            self.curs.execute(query)
+            res = self.curs.fetchall()
+            for row in res:
+                item_id_list.append(row[0])
+        return list(set(item_id_list))
 
     def select_attribute_id(self):
         attribute_id_list = []
-        query = """SELECT DISTINCT attributeID from attributeTbl;"""
+        query = """SELECT DISTINCT attributeID FROM match_detailTbl;"""
         self.curs.execute(query)
         res = self.curs.fetchall()
         for row in res:
@@ -130,4 +132,3 @@ class MysqlController:
 
     def disconnect_db(self):
         self.conn.close()
-
