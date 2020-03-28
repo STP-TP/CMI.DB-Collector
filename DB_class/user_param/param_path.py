@@ -15,6 +15,14 @@ log_path = os.getcwd() + '\\LOG'
 api_log = '\\api_http_error.json'
 
 
+def make_dir(param_path):
+    try:
+        os.makedirs(param_path)
+        print("Directory ", param_path, " Created")
+    except FileExistsError:
+        pass
+
+
 def item_img_url(item_id):
     return "https://img-api.neople.co.kr/cy/items/" + item_id
 

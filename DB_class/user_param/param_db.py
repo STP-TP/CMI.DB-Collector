@@ -151,3 +151,4 @@ item_slot = {
     304: "",
     305: ""
 }
+tier_list = ["HERO", "LEGEND", "ACE", "JOKER", "GOLD", "SILVER", "BRONZE", "Unranked"]

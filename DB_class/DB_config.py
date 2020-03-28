@@ -3,7 +3,7 @@ from DB_class.user_param.param_db import *
 import datetime
 
 
-def convert_datetime_to_str(date_input):
+def convert_datetime_to_str(date_input: datetime):
     return date_input.strftime("%Y%m%d%H%M%S")
 
 
@@ -130,6 +130,25 @@ class MysqlController:
             for row in res:
                 attribute_id_list.append(row[0])
         return list(set(attribute_id_list))
+
+    def select_search_date(self):
+        date_list = {}
+        query = """SELECT * FROM search_datetbl"""
+        self.curs.execute(query)
+        res = self.curs.fetchall()
+        for row in res:
+            date_list[row[0]] = [row[1], row[2]]
+        return date_list
+
+    '''========================UPDATE========================'''
+
+    def update_search_date(self, tier, past_date, recent_date):
+        query = '''UPDATE search_datetbl SET past_date = %s, recent_date = %s WHERE tierName = %s;
+        '''
+
+        self.curs.execute(query, (convert_datetime_to_str(past_date), convert_datetime_to_str(recent_date),
+                          tier))
+        self.conn.commit()
 
     def disconnect_db(self):
         self.conn.close()

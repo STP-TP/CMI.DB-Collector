@@ -18,7 +18,7 @@ class CollectDbFlow:
     def get_api_com_error_list(self, save_enabled=False):
         err_list = self.__com.get_api_error_list()
         if save_enabled:
-            # error save code
+            path_define.make_dir(path_define.log_path)
             with open(path_define.log_path + path_define.api_log, 'w') as outfile:
                 json.dump(err_list, outfile)
             pass
@@ -48,7 +48,7 @@ class CollectDbFlow:
         while True:
             if len(user_list) <= loop_user_count:
                 break
-            print(loop_user_count, "/", len(user_list))
+            print(loop_user_count+1, "/", len(user_list))
             temp_player_id = user_list[loop_user_count]
             loop_user_count += 1
             if temp_player_id in player_dict:
@@ -206,3 +206,39 @@ class CollectDbFlow:
         if self.__db_collect_mode:
             self.save_play_info_to_sql(local_user_db, local_match_db, local_match_detail_db)
             print("DB Save End")
+
+    def continuous_collecting(self, rating_tier, search_direction,
+                              ref_early_date: datetime.timedelta = datetime.timedelta(minutes=10)):
+        player_id_list = self.__sql.select_by_rating(rating_tier)
+        if len(player_id_list) is 0:
+            return
+
+        search_date = self.__sql.select_search_date()
+        ref_date: datetime
+        other_date: datetime
+        if search_direction == "past":
+            early_date = search_date[rating_tier][0] - ref_early_date
+            later_date = search_date[rating_tier][0] + datetime.timedelta(minutes=1)
+            search_date[rating_tier][0] -= ref_early_date
+        elif search_direction == "recent":
+            if search_date[rating_tier][1] - ref_early_date < datetime.datetime.now():
+                early_date = search_date[rating_tier][1] - datetime.timedelta(minutes=1)
+                later_date = search_date[rating_tier][1] + ref_early_date
+                search_date[rating_tier][1] += ref_early_date
+            else:
+                return
+        else:
+            return
+
+        [local_user_db, local_match_db, local_match_detail_db] = \
+            self.collect_game_information(player_id_list, early_date, later_date, rating)
+
+        if self.__db_collect_mode:
+            self.save_play_info_to_sql(local_user_db, local_match_db, local_match_detail_db)
+            self.__sql.update_search_date(rating_tier, search_date[rating_tier][0], search_date[rating_tier][1])
+            print("DB Save End")
+
+    def get_collecting_date(self):
+        return self.__sql.select_search_date()
+
+

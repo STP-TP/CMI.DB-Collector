@@ -32,8 +32,8 @@ class CommToApiServer:
         1092: "초기값 없는 Next 명령 기입"
     }
 
-    def __init__(self):
-        pass
+    def __init__(self, param_api_key=apiKey_jss):
+        __apiKey = param_api_key
 
     @staticmethod
     def _api_communication_count():
@@ -54,7 +54,7 @@ class CommToApiServer:
         # 횟수 제한 확인
         self._api_communication_count()
         err_return = {}
-        for i in range(10):
+        for i in range(5):
             try:
                 response = socket.urlopen(request_url)
                 res_code = response.getcode()
