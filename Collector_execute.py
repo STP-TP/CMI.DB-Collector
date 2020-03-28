@@ -54,6 +54,8 @@ def select_menu(menu: dict):
             elif func_num is 14:
                 # assist database
                 api_ctrl.collect_character_db(True)
+                api_ctrl.collect_items(True)
+                api_ctrl.collect_attributes(True)
                 pass
             elif func_num is 21:
                 # collect pass database

@@ -52,9 +52,13 @@ rarity_code = ["rarityCode", "rarityCode"]
 rarity_name = ["rarityName", "rarityName"]
 equip_slot_code = ["equipSlotCode", "equipSlotCode"]
 equip_slot_name = ["equipSlotName", "equipSlotName"]
+season_code = ["seasonCode", "seasonCode"]
+season_name = ["seasonName", "seasonName"]
+item_explain = ["explain", "explain"]
+item_explain_detail = ["explainDetail", "explainDetail"]
 attribute_id = ["id", "attributeId"]
 attribute_name = ["attributeName", "attributeName"]
-attribute_explain = ["attributeExplain", "attributeExplain"]
+attribute_explain = ["explain", "attributeExplain"]
 character_name = ["characterName", "characterName"]
 rating = "rating"
 normal = "normal"
@@ -109,17 +113,21 @@ position_db = {
 item_db = {
     item_id[sql]: "",
     item_name[sql]: "",
+    character_id[sql]: "",
     slot_code[sql]: 0,
     slot_name[sql]: "",
     rarity_code[sql]: 0,
     rarity_name[sql]: "",
-    equip_slot_code[sql]: 0,
-    equip_slot_name[sql]: ""
+    season_code[sql]: 0,
+    season_name[sql]: "",
+    item_explain[sql]: "",
+    item_explain_detail[sql]: ""
 }
 attribute_db = {
     attribute_id[sql]: "",
     attribute_name[sql]: "",
-    attribute_explain[sql]: ""
+    attribute_explain[sql]: "",
+    position_name[sql]: ""
 }
 character_db = {
     character_id[sql]: "",

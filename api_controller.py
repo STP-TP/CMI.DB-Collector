@@ -9,11 +9,11 @@ from DB_class.user_param.param_private import *
 
 class CollectDbFlow:
     __db_collect_mode = False
-    __sql = MysqlController(server_ip, server_id, server_pw, server_database)
-    parser = ApiParser()
 
     def __init__(self):
         self.__com = comm.CommToApiServer()
+        self.__sql = MysqlController(server_ip, server_id, server_pw, server_database)
+        self.parser = ApiParser()
 
     def get_api_com_error_list(self, save_enabled=False):
         err_list = self.__com.get_api_error_list()
@@ -108,14 +108,41 @@ class CollectDbFlow:
             print("DB saved complete")
         return local_character_db
 
-    def collect_items(self):
-        """char = self.db_char.get_db()
-        for char_id in char:
-            res = self.__com.search_item("E ", "front", 100, [char_id[character_id[api]]])
-            body = json.loads(res["body"])
-            for item in body.get("rows"):
-                self.db_item.overlap_check(item)
-        self.db_item.save_db()"""
+    def collect_items(self, save_on_off=False):
+        item_id_list = self.__sql.select_item_id()
+        item_id_list_set = []
+        temp_id_list = []
+        for local_id in item_id_list:
+            temp_id_list.append(local_id)
+            if len(temp_id_list) == 30:
+                item_id_list_set.append(copy.deepcopy(temp_id_list))
+                temp_id_list = []
+        if len(temp_id_list) > 0:
+            item_id_list_set.append(copy.deepcopy(temp_id_list))
+
+        local_item_id_list = []
+        for item_id_lst in item_id_list_set:
+            res = self.response_code(self.__com.lookup_item_multi_info(item_id_lst))
+            local_item_id_list += self.parser.item_multi_info(res)
+
+        if save_on_off:
+            for item_database in local_item_id_list:
+                self.__sql.insert_item(item_database)
+            print("Item Db save complete!!")
+        return local_item_id_list
+
+    def collect_attributes(self, save_on_off=False):
+        attribute_id_list = self.__sql.select_attribute_id()
+        local_attribute_db_list = []
+        for local_id in attribute_id_list:
+            res = self.response_code(self.__com.lookup_position_attribute(local_id))
+            local_attribute_db_list.append((self.parser.attribute_info(res)))
+
+        if save_on_off:
+            for attribute_database in local_attribute_db_list:
+                self.__sql.insert_attribute(attribute_database)
+            print("Attribute Db save complete!!")
+        return local_attribute_db_list
 
     def collect_rating_ranker_id(self, rank_min, rank_max):
         user_list = []

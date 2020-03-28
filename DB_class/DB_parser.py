@@ -1,8 +1,4 @@
 import json
-from DB_class.DB_user import *
-from DB_class.DB_match import *
-from DB_class.DB_match_detail import *
-from DB_class.DB_other import *
 from DB_class.user_param.param_db import *
 import datetime
 import copy
@@ -13,15 +9,6 @@ def convert_str_to_datetime(param_date: str):
 
 
 class ApiParser:
-    __user = User()
-    __match_rating = MatchList(rating)
-    __match_normal = MatchList(normal)
-    __detail = MatchDetailList()
-
-    __position = GamePositions()
-    __item = GameItems()
-    __character = GameCharacters()
-    __attribute = GameAttribute()
 
     __api_number = {
         1: "플레이어 검색",
@@ -139,11 +126,18 @@ class ApiParser:
     def item_search(self, body):
         pass
 
-    def item_info(self, body):
-        pass
+    @staticmethod
+    def item_info(body):
+        local_item_db = copy.deepcopy(item_db)
+        for key in local_item_db:
+            local_item_db[key] = body[key]
+        return local_item_db
 
     def item_multi_info(self, body):
-        pass
+        local_item_db_lst = []
+        for item in body["rows"]:
+            local_item_db_lst.append(self.item_info(item))
+        return local_item_db_lst
 
     @staticmethod
     def character_info(body):
@@ -152,8 +146,15 @@ class ApiParser:
             char_db.append(character)
         return char_db
 
-    def position_info(self, body):
-        pass
+    @staticmethod
+    def attribute_info(body):
+        local_attribute_db = copy.deepcopy(attribute_db)
+        for key in local_attribute_db:
+            if key == attribute_explain[sql]:
+                local_attribute_db[attribute_explain[sql]] = body[attribute_explain[api]]
+            else:
+                local_attribute_db[key] = body[key]
+        return local_attribute_db
 
     def execute_api_number(self, number):
         if number is 1:

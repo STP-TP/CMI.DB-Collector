@@ -255,9 +255,9 @@ class CommToApiServer:
             item_id_lst = []
 
         item_url = ""
-        for item_id in item_id_lst:
+        for idx, item_id in enumerate(item_id_lst):
             item_url = item_url + item_id
-            if item_id is not item_id_lst(len(item_id_lst) - 1):
+            if idx != len(item_id_lst)-1:
                 item_url = item_url + ","
         request_url = self._apiURL + "multi/battleitems/?itemIds=" + item_url + "&" + self._apiKey
         return self._get_api_body(request_url)
