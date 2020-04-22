@@ -14,6 +14,9 @@ character_path = database_path + '\\character.pkl'
 log_path = os.getcwd() + '\\LOG'
 api_log = '\\api_http_error.json'
 
+db_access_path = os.getcwd() + '/DB_class/user_param/db_access.json'
+api_key_path = os.getcwd() + '/DB_class/user_param/api_key.json'
+
 
 def make_dir(param_path):
     try:

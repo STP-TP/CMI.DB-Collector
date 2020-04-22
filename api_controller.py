@@ -12,7 +12,8 @@ class CollectDbFlow:
 
     def __init__(self):
         self.__com = comm.CommToApiServer()
-        self.__sql = MysqlController(server_ip, server_id, server_pw, server_database)
+        #self.__sql = MysqlController(server_ip, server_id, server_pw, server_database)
+        self.__sql = MysqlController(local_ip, local_id, local_pw, local_database)
         self.parser = ApiParser()
 
     def get_api_com_error_list(self, save_enabled=False):
