@@ -1,4 +1,5 @@
 from api_controller import *
+from auto_login import *
 import threading
 
 trigger_menu = {
@@ -19,8 +20,6 @@ main_menu = {
     1: ["Trigger function", trigger_menu],
     2: ["Continue function", continue_menu],
 }
-api_ctrl = CollectDbFlow()
-api_ctrl.set_collect_mode(True)
 
 
 def continuous_recent_collector():
@@ -83,4 +82,12 @@ def select_menu(menu: dict):
             api_ctrl.set_collect_mode(False)
 
 
+private_info = AutoLogin()
+private_info.call_log_in_menu()
+api_ctrl = CollectDbFlow(private_info.db_access_list[0]["server_ip"],
+                         private_info.db_access_list[0]["server_id"],
+                         private_info.db_access_list[0]["server_pw"],
+                         private_info.db_access_list[0]["server_db"],
+                         private_info.api_key_list)
+api_ctrl.set_collect_mode(True)
 select_menu(main_menu)

@@ -10,10 +10,10 @@ from DB_class.user_param.param_private import *
 class CollectDbFlow:
     __db_collect_mode = False
 
-    def __init__(self):
-        self.__com = comm.CommToApiServer()
-        #self.__sql = MysqlController(server_ip, server_id, server_pw, server_database)
-        self.__sql = MysqlController(local_ip, local_id, local_pw, local_database)
+    def __init__(self, param_ip, param_id, param_pw, param_db, param_api_key: list):
+        self.__com = comm.CommToApiServer(param_api_key[0])
+        self.__sub_com = comm.CommToApiServer(param_api_key[1])
+        self.__sql = MysqlController(param_ip, param_id, param_pw, param_db)
         self.parser = ApiParser()
 
     def get_api_com_error_list(self, save_enabled=False):

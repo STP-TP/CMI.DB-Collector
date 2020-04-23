@@ -7,7 +7,7 @@ from DB_class.user_param.param_private import *
 
 
 class CommToApiServer:
-    _apiKey = apiKey_jss
+    _apiKey: str
     _apiURL = "https://api.neople.co.kr/cy/"
     _apiWordType = "wordType=full"
     _innerErrCode = 0
@@ -32,8 +32,8 @@ class CommToApiServer:
         1092: "초기값 없는 Next 명령 기입"
     }
 
-    def __init__(self, param_api_key=apiKey_jss):
-        __apiKey = param_api_key
+    def __init__(self, param_api_key: str):
+        _apiKey = param_api_key
 
     @staticmethod
     def _api_communication_count():

@@ -17,7 +17,7 @@ class AutoLogin:
         3: ["Delete API KEY", 33]
     }
     log_in_menu = {
-        0: ["Exit", ""],
+        0: ["Go to execute menu", ""],
         1: ["Use existing settings", 11],
         2: ["Modify DB ACCESS", 12],
         3: ["Modify API KEY", 13]
@@ -46,6 +46,12 @@ class AutoLogin:
             if self.api_key_list[0] is not None:
                 self.is_api_key = True
 
+    @staticmethod
+    def _check_api_setting(param_api_key: list):
+        if len(param_api_key) == 1:
+            param_api_key.append(param_api_key[0])
+        return param_api_key
+
     def call_log_in_menu(self):
         while True:
             print("")
@@ -62,6 +68,7 @@ class AutoLogin:
                 except ValueError:
                     print("Select the menu number")
             if user_input == 0:
+                self.api_key_list = self._check_api_setting(self.api_key_list)
                 break
             else:
                 func_num = self.log_in_menu[user_input][1]
@@ -278,3 +285,4 @@ class AutoLogin:
                             json.dump(self.api_key_list, f, indent=2)
                         if self.api_key_list[0] is None:
                             self.is_api_key = False
+
