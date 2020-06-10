@@ -4,8 +4,8 @@
 
 ## Project Information
 1. 설치 모듈
-    * pymysql
-    * pyqt5
+    * ```pip install -r requirements.txt```
+    
 2. 추가 필요 정보
     * [사이퍼즈 API Key](https://developers.neople.co.kr/contents/apiDocs/cyphers)
     * SQL Server Address
