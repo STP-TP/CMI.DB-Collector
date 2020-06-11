@@ -4,7 +4,6 @@ from DB_class.user_param.param_db import *
 import DB_class.user_param.param_path as path_define
 from DB_class.DB_parser import *
 from DB_class.DB_config import *
-from DB_class.user_param.param_private import *
 
 
 class CollectDbFlow:

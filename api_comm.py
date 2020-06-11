@@ -3,7 +3,6 @@ import time
 import urllib.request as socket
 import urllib.error as urlerr
 from urllib.parse import quote
-from DB_class.user_param.param_private import *
 
 
 class CommToApiServer:
@@ -33,7 +32,7 @@ class CommToApiServer:
     }
 
     def __init__(self, param_api_key: str):
-        _apiKey = param_api_key
+        self._apiKey = param_api_key
 
     @staticmethod
     def _api_communication_count():

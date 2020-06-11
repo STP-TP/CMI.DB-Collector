@@ -1,5 +1,6 @@
 import pymysql
 from DB_class.user_param.param_db import *
+from CMI_Define.sql_define import *
 import datetime
 
 
@@ -18,47 +19,64 @@ class MysqlController:
     '''========================INSERT========================'''
 
     def insert_attribute(self, db_input):
-        query = '''
-        INSERT IGNORE INTO attributeTbl (attributeID, attributeName, attributeExplain) VALUES (%s, %s, %s);
-        '''
+        query = "INSERT IGNORE INTO %s (%s, %s, %s) VALUES (%%s, %%s, %%s);"\
+                    % (ATTRIBUTE_TABLE,
+                       ATTRIBUTE_ID, ATTRIBUTE_NAME, ATTRIBUTE_EXPLAIN)
+
         self.curs.execute(query, (db_input[attribute_id[sql]], db_input[attribute_name[sql]],
                                   db_input[attribute_explain[sql]]))
         self.conn.commit()
 
     def insert_character(self, db_input):
-        query = '''
-        INSERT IGNORE INTO characterTbl (characterID, characterName) VALUES (%s, %s);
-        '''
+        query = "INSERT IGNORE INTO %s (%s, %s) VALUES (%%s, %%s);" \
+                % (CHARACTER_TABLE,
+                   CHARACTER_ID, CHARACTER_NAME)
+
         self.curs.execute(query, (db_input[character_id[sql]], db_input[character_name[sql]]))
         self.conn.commit()
 
     def insert_item(self, db_input):
-        query = '''
-        INSERT IGNORE INTO itemTbl (itemID, itemName, slotCode, slotName, rarityCode, rarityName, equipSlotCode,
-         equipSlotName)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);   
-        '''
+        query = "INSERT IGNORE INTO %s (%s, %s, %s, %s, %s, %s, %s, %s) " \
+                "VALUES (%%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s);" \
+                % (ITEM_TABLE,
+                   ITEM_ID, ITEM_NAME, SLOT_CODE, SLOT_NAME, RARITY_CODE, RARITY_NAME, EQUIP_SLOT_CODE, EQUIP_SLOT_NAME)
+
         self.curs.execute(query, (db_input[item_id[sql]], db_input[item_name[sql]], int(db_input[slot_code[sql]]),
                                   db_input[slot_name[sql]], int(db_input[rarity_code[sql]]), db_input[rarity_name[sql]],
                                   int(db_input[equip_slot_code[sql]]), db_input[equip_slot_name[sql]]))
         self.conn.commit()
 
     def insert_match(self, db_input):
-        query = '''
-        INSERT IGNORE INTO matchTbl (date, matchID, mapID, mapName, gametypeID) VALUES (%s, %s, %s, %s, %s);
-        '''
+        query = "INSERT IGNORE INTO %s (%s, %s, %s, %s, %s) " \
+                "VALUES (%%s, %%s, %%s, %%s, %%s);" \
+                % (MATCH_TABLE,
+                   DATE, MATCH_ID, MAP_ID, MAP_NAME, GAME_TYPE_ID)
+
         self.curs.execute(query, (convert_datetime_to_str(db_input[date[sql]]), db_input[match_id[sql]],
                                   db_input[map_id[sql]], db_input[map_name[sql]], db_input[game_type_id[sql]]))
         self.conn.commit()
 
     def insert_match_detail(self, db_input):
-        query = '''INSERT IGNORE INTO match_detailTbl (matchID, playerID, result, random, partyUserCount, characterID,
-         level, killCount, deathCount, assistCount, attackPoint, damagePoint, battlePoint, sightPoint, playTime,
-         positionName, attributeID_lv1, attributeID_lv2, attributeID_lv3, item_101, item_102, item_103, item_104,
-         item_105, item_106, item_107, item_202, item_203, item_204, item_205, item_301, item_302, item_303, item_304,
-         item_305) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-        '''
+        query = "INSERT IGNORE INTO %s (%s, %s, %s, %s, %s, %s, %s, " \
+                "%s, %s, %s, %s, %s, %s, %s, " \
+                "%s, %s, %s, %s, %s, " \
+                "%s, %s, %s, %s, %s, %s, %s, " \
+                "%s, %s, %s, %s, " \
+                "%s, %s, %s, %s, %s) " \
+                "VALUES (%%s, %%s, %%s, %%s, %%s, %%s, %%s, " \
+                "%%s, %%s, %%s, %%s, %%s, %%s, %%s, " \
+                "%%s, %%s, %%s, %%s, %%s, " \
+                "%%s, %%s, %%s, %%s, %%s, %%s, %%s, " \
+                "%%s, %%s, %%s, %%s, " \
+                "%%s, %%s, %%s, %%s, %%s);" \
+                % (MATCH_DETAIL_TABLE,
+                   MATCH_ID, PLAYER_ID, RESULT, RANDOM, PARTY_USER_COUNT, CHARACTER_ID, LEVEL,
+                   KILL_COUNT, DEATH_COUNT, ASSIST_COUNT, ATTACK_POINT, DAMAGE_POINT, BATTLE_POINT, SIGHT_POINT,
+                   PLAY_TIME, POSITION_NAME, ATTRIBUTE_ID_LV1, ATTRIBUTE_ID_LV2, ATTRIBUTE_ID_LV3,
+                   ITEM_101, ITEM_102, ITEM_103, ITEM_104, ITEM_105, ITEM_106, ITEM_107,
+                   ITEM_202, ITEM_203, ITEM_204, ITEM_205,
+                   ITEM_301, ITEM_302, ITEM_303, ITEM_304, ITEM_305)
+
         self.curs.execute(query, (db_input[match_id[sql]], db_input[player_id[sql]], db_input[result[sql]],
                                   db_input[random[sql]], int(db_input[party_user_count[sql]]),
                                   db_input[character_id[sql]], int(db_input[level[sql]]),
@@ -76,21 +94,22 @@ class MysqlController:
         self.conn.commit()
 
     def insert_position(self, db_input):
-        query = '''INSERT IGNORE INTO positionTbl (positionName, positionExplain) VALUES (%s, %s);
-        '''
+        query = "INSERT IGNORE INTO %s (%s, %s) VALUES (%%s, %%s);" \
+                % (POSITION_TABLE,
+                   POSITION_NAME, POSITION_EXPLAIN)
+
         self.curs.execute(query, (db_input["position_name[sql]"], db_input["position_explain[sql]"]))
         self.conn.commit()
 
     def insert_user(self, db_input):
-        query = '''INSERT INTO userTbl (playerID, nickname, grade, clanName, ratingPoint, maxRatingPoint, tierName,
-         ratingWin, ratingLose, ratingStop, normalWin, normalLose, normalStop) VALUES (%s, %s, %s, %s, %s, %s, %s, %s,
-        %s, %s, %s, %s, %s)
-        ON DUPLICATE KEY UPDATE playerID = VALUES(playerID), nickname = VALUES(nickname), grade = VALUES(grade),
-        clanName = VALUES(clanName), ratingPoint = VALUES(ratingPoint), maxRatingPoint = VALUES(maxRatingPoint),
-        tierName = VALUES(tierName), ratingWin = VALUES(ratingWin), ratingLose = VALUES(ratingLose),
-        ratingStop = VALUES(ratingStop), normalWin = VALUES(normalWin), normalLose = VALUES(normalLose),
-        normalStop = VALUES(normalStop);
-        '''
+        query = "INSERT IGNORE INTO %s (%s, %s, %s, %s, %s, %s, %s, " \
+                "%s, %s, %s, %s, %s, %s) " \
+                "VALUES (%%s, %%s, %%s, %%s, %%s, %%s, %%s, " \
+                "%%s, %%s, %%s, %%s, %%s, %%s);" \
+                % (USER_TABLE,
+                   PLAYER_ID, NICKNAME, GRADE, CLAN_NAME, RATING_POINT, MAX_RATING_POINT, TIER_NAME,
+                   RATING_WIN, RATING_LOSE, RATING_STOP, NORMAL_WIN, NORMAL_LOSE, NORMAL_STOP)
+
         self.curs.execute(query, (db_input[player_id[sql]], db_input[nickname[sql]], int(db_input[grade[sql]]),
                                   db_input[clan_name[sql]], int(db_input[rating_point[sql]]),
                                   int(db_input[max_rating_point[sql]]), db_input[tier_name[sql]],
@@ -103,7 +122,9 @@ class MysqlController:
 
     def select_by_rating(self, str_input):
         player_id_list = []
-        query = """SELECT playerID FROM userTbl WHERE tierName LIKE '""" + str_input + '''%' ;'''
+        query = "SELECT %s FROM %s WHERE %s LIKE '%s%%' ;" \
+                % (PLAYER_ID, USER_TABLE, TIER_NAME, str_input)
+
         self.curs.execute(query)
         res = self.curs.fetchall()
         for row in res:
@@ -113,8 +134,9 @@ class MysqlController:
     def select_item_id(self):
         item_id_list = []
         for k in item_slot.keys():
-            query = """SELECT DISTINCT item_""" + str(k) + """ FROM match_detailTbl WHERE NOT item_""" + str(k) +\
-                    """ = ' ';"""
+            query = "SELECT DISTINCT %s FROM %s WHERE NOT %s = ' ';" \
+                    % ("ITEM_%s" % str(k), MATCH_DETAIL_TABLE, "ITEM_%s" % str(k))
+
             self.curs.execute(query)
             res = self.curs.fetchall()
             for row in res:
@@ -124,7 +146,9 @@ class MysqlController:
     def select_attribute_id(self):
         attribute_id_list = []
         for k in ('lv1', 'lv2', 'lv3'):
-            query = """SELECT DISTINCT attributeID_""" + k + """ FROM match_detailTbl;"""
+            query = "SELECT DISTINCT %s FROM %s;"\
+                    % (ATTRIBUTE_ID + "_%s" % k, MATCH_DETAIL_TABLE)
+
             self.curs.execute(query)
             res = self.curs.fetchall()
             for row in res:
@@ -133,7 +157,7 @@ class MysqlController:
 
     def select_search_date(self):
         date_list = {}
-        query = """SELECT * FROM search_datetbl"""
+        query = "SELECT * FROM %s;" % SEARCH_DATE_TABLE
         self.curs.execute(query)
         res = self.curs.fetchall()
         for row in res:
@@ -143,8 +167,8 @@ class MysqlController:
     '''========================UPDATE========================'''
 
     def update_search_date(self, tier, past_date, recent_date):
-        query = '''UPDATE search_datetbl SET past_date = %s, recent_date = %s WHERE tierName = %s;
-        '''
+        query = "UPDATE %s SET %s = %%s, %s = %%s WHERE %s = %%s;"\
+                % (SEARCH_DATE_TABLE, PAST_DATE, RECENT_DATE, TIER_NAME)
 
         self.curs.execute(query, (convert_datetime_to_str(past_date), convert_datetime_to_str(recent_date),
                           tier))
