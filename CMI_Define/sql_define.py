@@ -1,19 +1,19 @@
-
+APP_NAME = "analysis_"
 ################################################
 # DATABASE TABLE AND FIELD NAME
 # ATTRIBUTE_TABLE
-ATTRIBUTE_TABLE = "attributeTbl"
+ATTRIBUTE_TABLE = APP_NAME + "attributeTbl"
 ATTRIBUTE_ID = "attributeId"
 ATTRIBUTE_NAME = "attributeName"
 ATTRIBUTE_EXPLAIN = "attributeExplain"
 
 # CHARACTER_TABLE
-CHARACTER_TABLE = "characterTbl"
+CHARACTER_TABLE = APP_NAME + "characterTbl"
 CHARACTER_ID = "characterId"
 CHARACTER_NAME = "characterName"
 
 # ITEM_TABLE
-ITEM_TABLE = "itemTbl"
+ITEM_TABLE = APP_NAME + "itemTbl"
 ITEM_NAME = "itemName"
 SLOT_CODE = "slotCode"
 SLOT_NAME = "slotName"
@@ -27,7 +27,7 @@ ITEM_EXPLAIN = "explain"
 ITEM_EXPLAIN_DETAIL = "explainDetail"
 
 # MATCH_TABLE
-MATCH_TABLE = "matchTbl"
+MATCH_TABLE = APP_NAME + "matchTbl"
 DATE = "date"
 MATCH_ID = "matchId"
 MAP_ID = "mapId"
@@ -36,7 +36,7 @@ ITEM_ID = "itemId"
 GAME_TYPE_ID = "gameTypeId"
 
 # MATCH_DETAIL_TABLE
-MATCH_DETAIL_TABLE = "match_detailTbl"
+MATCH_DETAIL_TABLE = APP_NAME + "match_detailTbl"
 RESULT = "result"
 RANDOM = "random"
 PARTY_USER_COUNT = "partyUserCount"
@@ -70,17 +70,17 @@ ITEM_304 = "item_304"
 ITEM_305 = "item_305"
 
 # POSITION_TABLE
-POSITION_TABLE = "positionTbl"
+POSITION_TABLE = APP_NAME + "positionTbl"
 POSITION_NAME = "positionName"
 POSITION_EXPLAIN = "explain"
 
 # SEARCH_DATE_TABLE
-SEARCH_DATE_TABLE = "search_dateTbl"
+SEARCH_DATE_TABLE = APP_NAME + "search_dateTbl"
 PAST_DATE = "past_date"
 RECENT_DATE = "recent_date"
 
 # USER_TABLE
-USER_TABLE = "userTbl"
+USER_TABLE = APP_NAME + "userTbl"
 PLAYER_ID = "playerId"
 NICKNAME = "nickname"
 GRADE = "grade"
