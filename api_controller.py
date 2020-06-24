@@ -214,6 +214,13 @@ class CollectDbFlow:
             return
 
         search_date = self.__sql.select_search_date()
+
+        if search_date.get(rating_tier) is None:
+            search_date[rating_tier] = [datetime.datetime.now().replace(microsecond=0, second=0)
+                                        - datetime.timedelta(minutes=(datetime.datetime.now().minute % 10)),
+                                        datetime.datetime.now().replace(microsecond=0, second=0)
+                                        - datetime.timedelta(minutes=(datetime.datetime.now().minute % 10))]
+
         ref_date: datetime
         other_date: datetime
         if search_direction == "past":

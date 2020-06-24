@@ -82,6 +82,7 @@ def select_menu(menu: dict):
             api_ctrl.set_collect_mode(False)
 
 
+
 private_info = AutoLogin()
 private_info.call_log_in_menu()
 api_ctrl = CollectDbFlow(private_info.db_access_list[0]["server_ip"],
